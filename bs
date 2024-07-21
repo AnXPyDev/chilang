@@ -1,0 +1,50 @@
+#!/bin/sh
+
+. ./.env
+
+BUILD_TYPE=
+BUILD_POSTFIX=
+
+_compile() {
+    (
+        set -x;
+        $CC -I "$SRC_DIR" "$1" $CFLAGS -o "$2";
+    )
+}
+
+build() {
+    [ "$BUILD_TYPE" ] && BUILD_POSTFIX=-"$BUILD_TYPE"
+
+    SOURCE="$1"
+    TARGET="$BUILD_DIR"/$(basename "$SOURCE" | sed 's/\..*$//')$BUILD_POSTFIX
+    [ -z "$SOURCE" ] && SOURCE="$SRC_DIR/main.c" && TARGET="$BUILD_DIR/$NAME"$BUILD_POSTFIX
+    _compile "$SOURCE" "$TARGET" || return 1
+    echo "$TARGET"
+}
+
+dbg() {
+    BUILD_TYPE=debug
+    CFLAGS="$CFLAGS -g"
+    return 12
+}
+
+rel() {
+    BUILD_TYPE=release
+    CFLAGS="$CFLAGS -O3"
+    echo "HELLO"
+    return 12
+}
+
+run() {
+    BINARY=$(build $@)
+    [ $? != 0 ] && echo "Build failed" && return 1;
+    [ "$BUILD_TYPE" = debug ] && command "$DEBUGGER" "$BINARY" || command "$BINARY"
+}
+
+COMMANDS="$@"
+
+for x in $(seq $#); do
+    $COMMANDS
+    [ $? != 12 ] && break
+    COMMANDS=$(echo "$COMMANDS" | cut -d ' ' -f 2- )
+done
