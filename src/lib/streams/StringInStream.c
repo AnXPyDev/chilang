@@ -49,7 +49,7 @@ StringInStream StringInStream_new(CDataBuffer buf) {
 }
 
 StringInStream StringInStream_newString(const String *string) {
-    return StringInStream_new(String_DataBuffer(string));
+    return StringInStream_new(String_view(string));
 }
 
 InStream StringInStream_InStream(StringInStream *this) {

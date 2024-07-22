@@ -27,3 +27,7 @@ const Expression Expression_NULL = {
     .interface = NULL,
     .object = NULL
 };
+
+bool Expression_isNull(Expression this) {
+    return this.interface == NULL;
+}

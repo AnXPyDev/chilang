@@ -82,14 +82,12 @@ void test_map() {
 
     for (Size i = 0; i < keyc; i++) {
         const char *key = keys[i];
-        Size key_size = strlen(key);
-        *(int*)Map_ensure(&m, key, key_size) = i * 2;
+        *(int*)Map_ensure(&m, strview(key)) = i * 2;
     }
 
     for (Size i = 0; i < keyc; i++) {
         const char *key = keys[i];
-        Size key_size = strlen(key);
-        int *val = (int*)Map_get(&m, key, key_size);
+        int *val = (int*)Map_get(&m, strview(key));
         if (val == NULL) {
             fprintf(stderr, "[%s] = NULL\n", key);
             continue;
@@ -99,14 +97,12 @@ void test_map() {
 
     for (Size i = 0; i < keyc; i += 2) {
         const char *key = keys[i];
-        Size key_size = strlen(key);
-        Map_delete(&m, key, key_size);
+        Map_delete(&m, strview(key));
     }
 
     for (Size i = 0; i < keyc; i++) {
         const char *key = keys[i];
-        Size key_size = strlen(key);
-        int *val = (int*)Map_get(&m, key, key_size);
+        int *val = (int*)Map_get(&m, strview(key));
         if (val == NULL) {
             fprintf(stderr, "[%s] = NULL\n", key);
             continue;

@@ -15,7 +15,7 @@ int StringOutStream_write(void *vthis, CDataBuffer buf) {
 }
 
 int StringOutStream_puts(void *vthis, const char *str) {
-    return StringOutStream_write(vthis, cstring_DataBuffer(str));
+    return StringOutStream_write(vthis, strview(str));
 }
 
 int StringOutStream_flush(void *vthis) {

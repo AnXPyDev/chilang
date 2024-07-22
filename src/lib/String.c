@@ -18,13 +18,6 @@ String String_new(Allocator allocator) {
     return this;
 }
 
-String String_const_proxy(const char *str) {
-    String this;
-    this.data = (char*)str;
-    this.length = strlen(str);
-    return this;
-}
-
 void String_zero(String *this) {
     this->data[this->length] = 0;
 }
@@ -118,15 +111,17 @@ void String_print(const String *this, OutStream outstream) {
     OutStream_puts(outstream, this->data);
 }
 
-CDataBuffer String_DataBuffer(const String *this) {
-    return (CDataBuffer) {
+typedef CDataBuffer StringView;
+
+StringView String_view(const String *this) {
+    return (StringView) {
         .data = this->data,
         .size = this->length
     };
 }
 
-CDataBuffer cstring_DataBuffer(const char *str) {
-    return (CDataBuffer) {
+StringView strview(const char *str) {
+    return (StringView) {
         .data = str,
         .size = strlen(str)
     };

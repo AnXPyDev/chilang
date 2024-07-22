@@ -1,6 +1,8 @@
 #include "Type.c"
 
 #include "types/Primitive.c"
+#include "types/Pointer.c"
+#include "types/Qualifier.c"
 #include "types/Struct.c"
 
 #include "Expression.c"
