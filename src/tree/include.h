@@ -8,6 +8,9 @@
 #include "Expression.c"
 
 #include "Entity.c"
+
+#include "entities/Type.c"
+
 #include "Scope.c"
 #include "Namespace.c"
 #include "Unit.c"

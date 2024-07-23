@@ -116,9 +116,15 @@ void test_map() {
 
 #undef keyc
 
+void test_format() {
+    format(os_stderr, "Ahoj {d}, {d}!", 2, 1);
+}
+
 int main() {
-    test_vector();
-    test_map();
-    test_stream();
+    std_streams_init();
+    //test_vector();
+    //test_map();
+    //test_stream();
+    test_format();
     return 0;
 }

@@ -5,6 +5,17 @@ typedef struct {
     char *data;
 } String;
 
+const String String_NULL = {
+    .allocator = Allocator_NULL,
+    .length = 0,
+    .capacity = 0,
+    .data = NULL
+};
+
+bool String_isNull(String *this) {
+    return this->data == NULL;
+}
+
 void String_create(String *this, Allocator allocator) {
     this->allocator = allocator;
     this->length = 0;
@@ -109,6 +120,17 @@ void String_join(String *this, String *other) {
 
 void String_print(const String *this, OutStream outstream) {
     OutStream_puts(outstream, this->data);
+}
+
+void String_print_void(const void *vthis, OutStream outstream) {
+    String_print((const String*)vthis, outstream);
+}
+
+Printable String_Printable(const String *this) {
+    return (Printable) {
+        .print = &String_print_void,
+        .object = (const void*)this
+    };
 }
 
 typedef CDataBuffer StringView;

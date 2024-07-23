@@ -156,6 +156,24 @@ void *Map_foreach(Map *this, void *(*loop)(void *item, void *payload), void *pay
             if (r) {
                 return r;
             }
+            entry = entry->next;
+        }
+    }
+    return NULL;
+}
+
+void *Map_foreach_kv(Map *this, void *(*loop)(CDataBuffer key, void *item, void *payload), void *payload) {
+    for (Size i = 0; i < MAP_BUCKETS; i++) {
+        struct Map_Entry *entry = this->buckets[i];
+        while (entry) {
+            void *r = loop(
+                (CDataBuffer) { .data = ENTRY_KEY(entry, this->item_size), .size = entry->key_size },
+                ENTRY_ITEM(entry), payload
+            );
+            if (r) {
+                return r;
+            }
+            entry = entry->next;
         }
     }
     return NULL;

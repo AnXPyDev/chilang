@@ -11,6 +11,11 @@ typedef struct {
     void *object;
 } OutStream;
 
+typedef struct {
+    void (*print)(const void *this, OutStream stream);
+    const void *object;
+} Printable;
+
 int OutStream_putc(OutStream this, int c) {
     return this.interface->putc(this.object, c);
 }
@@ -29,4 +34,8 @@ int OutStream_flush(OutStream this) {
 
 int OutStream_close(OutStream this) {
     return this.interface->close(this.object);
+}
+
+void OutStream_print(OutStream this, Printable printable) {
+    printable.print(printable.object, this);
 }

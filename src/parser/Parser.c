@@ -1,6 +1,7 @@
 typedef struct {
     Allocator allocator;
     OutStream logStream;
+    Scope globalScope;
 } Parser;
 
 typedef struct {

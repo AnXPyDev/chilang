@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     
     OutStream_puts(os_stderr, "\nQualifier types:\n");
 
-    Type i32const = QualifierType_wrap_copy(TypeQualifiers_make(TYPEQUALIFIER_CONST), i32ptr, standardAllocator);
+    Type i32const = QualifierType_wrap_copy(TypeQualifiers_make(TYPEQUALIFIER_CONST), PrimitiveType_Type(TYPE_I32), standardAllocator);
 
     printType(os_stderr, i32const);
     OutStream_putc(os_stderr, '\n');
