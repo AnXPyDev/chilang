@@ -1,12 +1,15 @@
 void Scope_add_type(Scope *scope, StringView token, Type type) {
-    Entity *ent = Scope_add_entity(scope, token);
-    ent->mutable = false;
-    TypeEntity_create(ent, type, scope->allocator);
+    Member *memb = Scope_add_member(scope, token);
+    TypedObject to = TypeObject_create(type, scope->allocator);
+    memb->type = to.type;
+    memb->object = to.object;
+    memb->qualifiers = MemberQualifiers_NULL;
+    memb->qualifiers._const = true;
 }
 
 #define ADD_PTYPE(token, type) Scope_add_type(scope, strview(token), PrimitiveType_Type(type))
 
-void GlobalScope_init(Scope *scope) {
+int GlobalScope_init(Scope *scope) {
     ADD_PTYPE("namespace", TYPE_NAMESPACE);
     ADD_PTYPE("alias", TYPE_ALIAS);
     ADD_PTYPE("interface", TYPE_INTERFACE);
@@ -24,6 +27,8 @@ void GlobalScope_init(Scope *scope) {
     ADD_PTYPE("u32", TYPE_U32);
     ADD_PTYPE("i8", TYPE_I8);
     ADD_PTYPE("i32", TYPE_I32);
+
+    return 0;
 }
 
 #undef ADD_PTYPE

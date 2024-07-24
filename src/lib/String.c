@@ -133,18 +133,9 @@ Printable String_Printable(const String *this) {
     };
 }
 
-typedef CDataBuffer StringView;
-
 StringView String_view(const String *this) {
     return (StringView) {
         .data = this->data,
         .size = this->length
-    };
-}
-
-StringView strview(const char *str) {
-    return (StringView) {
-        .data = str,
-        .size = strlen(str)
     };
 }

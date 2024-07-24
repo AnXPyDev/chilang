@@ -4,17 +4,21 @@
 #define ENTRY_KEY(entry, item_size) (ENTRY_ITEM(entry) + item_size)
 
 typedef unsigned int Map_Hash;
+typedef unsigned int Map_EntryIndex;
 
-struct Map_Entry {
+typedef struct Map_Entry {
     struct Map_Entry *next;
+    Map_EntryIndex index;
     Map_Hash hash;
     Size key_size;
     // data[Map.item_size]; data[key_size]
-};
+} Map_Entry;
 
 typedef struct {
     Allocator allocator;
     Size item_size;
+    Map_EntryIndex counter;
+    Size nitems;
     struct Map_Entry *buckets[MAP_BUCKETS];
 } Map;
 
@@ -22,7 +26,9 @@ typedef CDataBuffer Map_Key;
 
 void Map_create(Map *this, Allocator allocator, Size item_size) {
     this->allocator = allocator;
-    this->item_size = item_size; 
+    this->item_size = item_size;
+    this->counter = 0;
+    this->nitems = 0;
     for (Size i = 0; i < MAP_BUCKETS; i++) {
         this->buckets[i] = NULL;
     }
@@ -38,6 +44,8 @@ struct Map_Entry *Map_createEntry(Map *this, Map_Hash hash, Map_Key key) {
     struct Map_Entry *entry = Allocator_calloc(this->allocator, sizeof(struct Map_Entry) + key.size + this->item_size);
     entry->key_size = key.size;
     entry->hash = hash;
+    entry->index = this->counter;
+    this->counter += 1;
     memcpy(ENTRY_KEY(entry, this->item_size), key.data, key.size);
     return entry;
 }
@@ -66,6 +74,7 @@ struct Map_Entry *Map_pushKey(Map *this, Map_Hash hash, Map_Key key) {
     struct Map_Entry *next_entry = this->buckets[MAP_BUCKET(hash)];
     entry->next = next_entry;
     this->buckets[MAP_BUCKET(hash)] = entry;
+    this->nitems++;
     return entry;
 }
 
@@ -73,6 +82,7 @@ void Map_removeEntry(Map *this, struct Map_Entry **entryp) {
     struct Map_Entry *next = (*entryp)->next;
     Map_destroyEntry(this, *entryp);
     *entryp = next;
+    this->nitems--;
 }
 
 struct Map_Entry *Map_findEntry(Map *this, Map_Hash hash, Map_Key key) {
@@ -162,14 +172,15 @@ void *Map_foreach(Map *this, void *(*loop)(void *item, void *payload), void *pay
     return NULL;
 }
 
-void *Map_foreach_kv(Map *this, void *(*loop)(CDataBuffer key, void *item, void *payload), void *payload) {
+typedef void *(*Map_kvloop_fn)(CDataBuffer key, void *item, void *payload);
+
+#define CALL_KVLOOP(entry) loop((CDataBuffer) { .data = ENTRY_KEY(entry, this->item_size), .size = entry->key_size }, ENTRY_ITEM(entry), payload)
+
+void *Map_foreach_kv(Map *this, Map_kvloop_fn loop, void *payload) {
     for (Size i = 0; i < MAP_BUCKETS; i++) {
         struct Map_Entry *entry = this->buckets[i];
         while (entry) {
-            void *r = loop(
-                (CDataBuffer) { .data = ENTRY_KEY(entry, this->item_size), .size = entry->key_size },
-                ENTRY_ITEM(entry), payload
-            );
+            void *r = CALL_KVLOOP(entry);
             if (r) {
                 return r;
             }
@@ -179,6 +190,48 @@ void *Map_foreach_kv(Map *this, void *(*loop)(CDataBuffer key, void *item, void 
     return NULL;
 }
 
+void *Map_foreach_stable_kv(Map *this, Map_kvloop_fn loop, void *payload) {
+    Map_Entry *buckets[MAP_BUCKETS];
+    for (Size i = 0; i < MAP_BUCKETS; i++) {
+        buckets[i] = this->buckets[i];
+    }
+
+    Map_Entry **sorted_entries = (Map_Entry**)malloc(sizeof(Map_Entry*) * this->nitems);
+    Map_Entry **ep = sorted_entries;
+
+    while (1) {
+        Map_Entry **min = NULL;
+        for (Size i = 0; i < MAP_BUCKETS; i++) {
+            if (buckets[i] != NULL && (min == NULL || buckets[i]->index > (*min)->index)) {
+                min = &buckets[i];
+            }
+        }
+
+        if (min == NULL) {
+            break;
+        }
+
+        *ep = *min;
+        ep++;
+        *min = (*min)->next;
+    }
+
+    void *result = NULL;
+
+    for (Size i = this->nitems; i > 0; i--) {
+        result = CALL_KVLOOP(sorted_entries[i - 1]);
+        if (result) {
+            goto end;
+        }
+        
+    }
+
+    end:;
+    free(sorted_entries);
+    return result;
+}
+
+#undef CALL_KVLOOP
 #undef ENTRY_ITEM
 #undef ENTRY_KEY
 #undef MAP_BUCKET

@@ -18,6 +18,7 @@
 
 #include "streams/FileOutStream.c"
 #include "streams/StringOutStream.c"
+#include "streams/DelimOutStream.c"
 
 #include "std_streams.c"
 #include "format.c"

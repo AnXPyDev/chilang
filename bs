@@ -31,7 +31,6 @@ dbg() {
 rel() {
     BUILD_TYPE=release
     CFLAGS="$CFLAGS -O3"
-    echo "HELLO"
     return 12
 }
 

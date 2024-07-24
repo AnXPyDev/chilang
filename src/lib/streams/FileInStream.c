@@ -12,12 +12,12 @@ Size FileInStream_read(void *vthis, DataBuffer buf) {
     return fread(buf.data, 1, buf.size, this->fp);
 }
 
-int FileInStream_end(void *vthis) {
-    return feof(this->fp);
+bool FileInStream_end(void *vthis) {
+    return feof(this->fp) != 0;
 }
 
-int FileInStream_close(void *vthis) {
-    return fclose(this->fp);
+void FileInStream_close(void *vthis) {
+    fclose(this->fp);
 }
 
 #undef this

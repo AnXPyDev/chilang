@@ -1,7 +1,7 @@
 typedef struct {
     Allocator allocator;
     OutStream logStream;
-    Scope globalScope;
+    Scope *globalScope;
 } Parser;
 
 typedef struct {
@@ -21,22 +21,29 @@ bool ParserResult_isSuccess(ParserResult result) {
     return result.code == 0;
 }
 
-void Parser_create(Parser *this) {
+void Parser_create(Parser *this) {}
+
+bool Parser_isDelimiter(int c) {
+    switch (c) {
+        case ' ':
+            return true;
+    } 
 }
 
-ParserResult Parser_parseUnit(Parser *this, Unit *unit, InStream in) {
-    String buffer = String_new(this->allocator);
-    String_blank(&buffer, 32);
-
-    OutStream_puts(this->logStream, "Parsing unit\n");
-
-    return ParserResult_Success;
-}
-
-ParserResult Parser_parseExpression(Parser *this, Namespace *unit) {
+ParserResult Parser_loadToken(Parser *this, Scope *this, InStream in) {
     return (ParserResult) {
         .code = 1,
         .message = "not implemented",
         .payload = NULL
     };
+}
+
+ParserResult Parser_parseUnit(Parser *this, Unit *unit, InStream in) {
+    OutStream_puts(this->logStream, "Parsing unit\n");
+    Unit_create(unit, this->allocator, this->globalScope);
+
+    ParserResult r = Parser_loadToken
+
+    
+    return ParserResult_Success;
 }

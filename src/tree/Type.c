@@ -24,6 +24,10 @@ const Type Type_NULL = {
     .object = NULL
 };
 
+bool Type_isNull(Type this) {
+    return this.interface == NULL;
+}
+
 void Type_destroy(Type this, Allocator allocator) {
     this.interface->destroy(this.object, allocator);
 }
@@ -38,4 +42,9 @@ Type Type_copy(Type this, Allocator allocator) {
 
 TypeInfo Type_info(Type this) {
     return this.interface->info(this.object);
+}
+
+Size Type_size(Type this) {
+    TypeInfo ti = Type_info(this);
+    return ti.size;
 }

@@ -82,6 +82,7 @@ PrimitiveType PrimitiveType_TYPES[TYPE__END] = {
     [TYPE_NAMESPACE] = { .type = TYPE_NAMESPACE },
     [TYPE_ALIAS] = { .type = TYPE_ALIAS },
     [TYPE_TEMPLATE] = { .type = TYPE_TEMPLATE },
+    [TYPE_INTERFACE] = { .type = TYPE_INTERFACE },
     [TYPE_TYPE] = { .type = TYPE_TYPE },
     [TYPE_MODIFIER] = { .type = TYPE_MODIFIER },
     [TYPE_STRUCT] = { .type = TYPE_STRUCT },

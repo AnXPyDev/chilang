@@ -1,11 +1,11 @@
 const uint32_t TYPEQUALIFIER_CONST = 1 << 0;
 
 typedef struct {
-    bool cnst : 1;
+    bool _const : 1;
 } TypeQualifiers;
 
 const TypeQualifiers TypeQualifiers_NULL = {
-    .cnst = false
+    ._const = false
 };
 
 typedef struct {
@@ -15,13 +15,13 @@ typedef struct {
 
 TypeQualifiers TypeQualifiers_merge(TypeQualifiers q1, TypeQualifiers q2) {
     return (TypeQualifiers) {
-        .cnst = q1.cnst || q2.cnst
+        ._const = q1._const || q2._const
     };
 }
 
 TypeQualifiers TypeQualifiers_make(uint32_t flags) {
     return (TypeQualifiers) {
-        .cnst = flags & TYPEQUALIFIER_CONST
+        ._const = flags & TYPEQUALIFIER_CONST
     };
 }
 
@@ -30,7 +30,7 @@ Type QualifierType_wrap_copy(TypeQualifiers qualifiers, Type type, Allocator all
 #define this ((QualifierType*)vthis)
 
 void QualifierType_repr(void *vthis, OutStream os) {
-    if (this->qualifiers.cnst) {
+    if (this->qualifiers._const) {
         OutStream_puts(os, "const ");
     }
 

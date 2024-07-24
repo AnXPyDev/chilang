@@ -7,9 +7,11 @@
 
 #include "Expression.c"
 
-#include "Entity.c"
+#include "Object.c"
 
-#include "entities/Type.c"
+#include "objects/Type.c"
+
+#include "MemberList.c"
 
 #include "Scope.c"
 #include "Namespace.c"

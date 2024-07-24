@@ -1,8 +1,8 @@
 typedef struct {
     int (*getc)(void *this);
     Size (*read)(void *this, DataBuffer buf);
-    int (*end)(void *this);
-    int (*close)(void *this);
+    bool (*end)(void *this);
+    void (*close)(void *this);
 } IInStream;
 
 typedef struct {
@@ -15,14 +15,14 @@ int InStream_getc(InStream this) {
     return this.interface->getc(this.object);
 }
 
-int InStream_read(InStream this, DataBuffer buf) {
+Size InStream_read(InStream this, DataBuffer buf) {
     return this.interface->read(this.object, buf);
 }
 
-int InStream_end(InStream this) {
+bool InStream_end(InStream this) {
     return this.interface->end(this.object);
 }
 
-int InStream_close(InStream this) {
-    return this.interface->close(this.object);
+void InStream_close(InStream this) {
+    this.interface->close(this.object);
 }

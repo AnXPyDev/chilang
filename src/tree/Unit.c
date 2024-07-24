@@ -4,10 +4,10 @@ typedef struct {
     Expression root;
 } Unit;
 
-void Unit_create(Unit *this, Allocator allocator) {
+void Unit_create(Unit *this, Allocator allocator, Scope *global) {
     this->allocator = allocator;
     this->root = Expression_NULL;
-    Namespace_create(&this->namespace, NULL, allocator);
+    Namespace_create(&this->namespace, allocator, global, NULL);
 }
 
 void Unit_destroy(Unit *this) {

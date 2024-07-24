@@ -19,12 +19,8 @@ Size StringInStream_read(void *vthis, DataBuffer buf) {
     return copied;
 }
 
-int StringInStream_end(void *vthis) {
+bool StringInStream_end(void *vthis) {
     return this->ptr >= this->end;
-}
-
-int StringInStream_close(void *vthis) {
-    return 0;
 }
 
 #undef this
@@ -33,7 +29,7 @@ const IInStream IStringInStream = {
     .getc = &StringInStream_getc,
     .read = &StringInStream_read,
     .end = &StringInStream_end,
-    .close = &StringInStream_close
+    .close = NULL
 };
 
 void StringInStream_create(StringInStream *this, CDataBuffer buf) {

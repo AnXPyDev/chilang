@@ -4,27 +4,20 @@ typedef struct {
 
 #define this ((StringOutStream*)vthis)
 
-int StringOutStream_putc(void *vthis, int c) {
+void StringOutStream_putc(void *vthis, int c) {
     *(char*)Vector_push(&this->buffer) = (char)c;
-    return c;
 }
 
-int StringOutStream_write(void *vthis, CDataBuffer buf) {
+void StringOutStream_write(void *vthis, CDataBuffer buf) {
     Vector_append(&this->buffer, buf.data, buf.size);
-    return 0;
 }
 
-int StringOutStream_puts(void *vthis, const char *str) {
-    return StringOutStream_write(vthis, strview(str));
+void StringOutStream_puts(void *vthis, const char *str) {
+    StringOutStream_write(vthis, strview(str));
 }
 
-int StringOutStream_flush(void *vthis) {
-    return 0;
-}
-
-int StringOutStream_close(void *vthis) {
+void StringOutStream_close(void *vthis) {
     Vector_destroy(&this->buffer);
-    return 0;
 }
 
 #undef this
@@ -33,8 +26,11 @@ const IOutStream IStringOutStream = {
     .putc = StringOutStream_putc,
     .puts = StringOutStream_puts,
     .write = StringOutStream_write,
-    .flush = StringOutStream_flush,
-    .close = StringOutStream_close
+    .flush = NULL,
+    .close = StringOutStream_close,
+    
+    .begin_item = NULL,
+    .end_item = NULL
 };
 
 void StringOutStream_create(StringOutStream *this, Allocator allocator) {

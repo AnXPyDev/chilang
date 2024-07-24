@@ -5,24 +5,24 @@ typedef struct {
 
 #define this ((FileOutStream*)vthis)
 
-int FileOutStream_putc(void *vthis, int c) {
-    return fputc(c, this->fp);
+void FileOutStream_putc(void *vthis, int c) {
+    fputc(c, this->fp);
 }
 
-int FileOutStream_puts(void *vthis, const char *s) {
-    return fputs(s, this->fp);
+void FileOutStream_puts(void *vthis, const char *s) {
+    fputs(s, this->fp);
 }
 
-int FileOutStream_write(void *vthis, CDataBuffer buf) {
-    return fwrite(buf.data, 1, buf.size, this->fp);
+void FileOutStream_write(void *vthis, CDataBuffer buf) {
+    fwrite(buf.data, 1, buf.size, this->fp);
 }
 
-int FileOutStream_flush(void *vthis) {
-    return fflush(this->fp);
+void FileOutStream_flush(void *vthis) {
+    fflush(this->fp);
 }
 
-int FileOutStream_close(void *vthis) {
-    return fclose(this->fp);
+void FileOutStream_close(void *vthis) {
+    fclose(this->fp);
 }
 
 #undef this
@@ -33,7 +33,10 @@ const IOutStream IFileOutStream = {
     .puts = &FileOutStream_puts,
     .write = &FileOutStream_write,
     .flush = &FileOutStream_flush,
-    .close = &FileOutStream_close
+    .close = &FileOutStream_close,
+    
+    .begin_item = NULL,
+    .end_item = NULL
 };
 
 void FileOutStream_create(FileOutStream *this, FILE *fp) {
