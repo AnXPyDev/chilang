@@ -16,3 +16,13 @@ StringView strview(const char *str) {
         .size = strlen(str)
     };
 }
+
+typedef struct {
+    void *data;
+    Size size;
+} Array;
+
+typedef struct {
+    const void *data;
+    Size size;
+} CArray;

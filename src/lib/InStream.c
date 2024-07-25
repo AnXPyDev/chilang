@@ -3,6 +3,7 @@ typedef struct {
     Size (*read)(void *this, DataBuffer buf);
     bool (*end)(void *this);
     void (*close)(void *this);
+    void *(*info)(void *this);
 } IInStream;
 
 typedef struct {
@@ -25,4 +26,12 @@ bool InStream_end(InStream this) {
 
 void InStream_close(InStream this) {
     this.interface->close(this.object);
+}
+
+void *InStream_info(InStream this) {
+    if (this.interface->info != NULL) {
+        return this.interface->info(this.object);
+    }
+
+    return NULL;
 }

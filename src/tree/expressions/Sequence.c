@@ -1,0 +1,51 @@
+typedef struct {
+    Size length;
+    Expression *items;
+} SequenceExpression;
+
+Expression SequenceExpression_Expression(SequenceExpression *this);
+
+#define this ((SequenceExpression*)vthis)
+
+void SequenceExpression_destroy(void *vthis, Allocator allocator) {
+    for (Size i = 0; i < this->length; i++) {
+        Expression_destroy(this->items[i], allocator);
+    }
+    Allocator_free(allocator, this);
+}
+
+void SequenceExpression_repr(void *vthis, OutStream os) {
+    for (Size i = 0; i < this->length; i++) {
+        OutStream_begin_item(os);
+        Expression_repr(this->items[i], os);
+        OutStream_end_item(os);
+    }
+}
+
+Expression SequenceExpression_copy(void *vthis, Allocator allocator) {
+    SequenceExpression *copy = Allocator_malloc(allocator, sizeof(SequenceExpression));
+    copy->length = this->length;
+    copy->items = Allocator_malloc(allocator, sizeof(Expression) * this->length);
+
+    for (Size i = 0; i < this->length; i++) {
+        copy->items[i] = Expression_copy(this->items[i], allocator);
+    }
+
+    return SequenceExpression_Expression(copy);
+}
+
+#undef this
+
+const IExpression ISequenceExpression = {
+    .destroy = &SequenceExpression_destroy,
+    .copy = &SequenceExpression_copy,
+    .repr = &SequenceExpression_repr
+};
+
+Expression SequenceExpression_upcast(SequenceExpression *this) {
+    return (Expresison) {
+        .interface = &ISequenceExpression,
+        .object = (void*)this 
+    };
+}
+

@@ -39,6 +39,6 @@ void Scope_repr(Scope *this, OutStream os) {
     DelimOutStream dos = DelimOutStream_new(os, delim);
     OutStream_puts(os, "Scope {");
     OutStream_write(os, delim);
-    MemberList_repr(&this->members, DelimOutStream_OutStream(&dos));
+    MemberList_repr(&this->members, DelimOutStream_upcast(&dos));
     OutStream_puts(os, "\n}");
 }

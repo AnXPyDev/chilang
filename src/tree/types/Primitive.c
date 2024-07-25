@@ -100,7 +100,7 @@ PrimitiveType PrimitiveType_TYPES[TYPE__END] = {
     [TYPE_U32] = { .type = TYPE_U32 },
 };
 
-Type PrimitiveType_Type(EPrimitiveType type);
+Type PrimitiveType_upcast(EPrimitiveType type);
 
 #define this ((PrimitiveType*)vthis)
 
@@ -115,7 +115,7 @@ TypeInfo PrimitiveType_info(void *vthis) {
 void PrimitiveType_destroy(void *vthis, Allocator allocator) {}
 
 Type PrimitiveType_copy(void *vthis, Allocator allocator) {
-    return PrimitiveType_Type(this->type);
+    return PrimitiveType_upcast(this->type);
 }
 
 #undef this
@@ -127,7 +127,7 @@ const IType IPrimitiveType = {
     .copy = &PrimitiveType_copy
 };
 
-Type PrimitiveType_Type(EPrimitiveType type) {
+Type PrimitiveType_upcast(EPrimitiveType type) {
     return (Type) {
         .interface = &IPrimitiveType,
         .object = &PrimitiveType_TYPES[type]

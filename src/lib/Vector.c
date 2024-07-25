@@ -174,3 +174,17 @@ void Vector_copy_buffer(Vector *this, void *buffer, Size size) {
 void Vector_copy(Vector *this, Vector *other) {
     Vector_copy_buffer(this, other->data, other->size);
 }
+
+Array Vector_Array(Vector *this) {
+    return (Array) {
+        .data = this->data,
+        .size = this->size
+    };
+}
+
+CArray Vector_CArray(const Vector *this) {
+    return (CArray) {
+        .data = this->data,
+        .size = this->size
+    };
+}

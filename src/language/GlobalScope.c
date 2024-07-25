@@ -7,7 +7,7 @@ void Scope_add_type(Scope *scope, StringView token, Type type) {
     memb->qualifiers._const = true;
 }
 
-#define ADD_PTYPE(token, type) Scope_add_type(scope, strview(token), PrimitiveType_Type(type))
+#define ADD_PTYPE(token, type) Scope_add_type(scope, strview(token), PrimitiveType_upcast(type))
 
 int GlobalScope_init(Scope *scope) {
     ADD_PTYPE("namespace", TYPE_NAMESPACE);
@@ -20,7 +20,7 @@ int GlobalScope_init(Scope *scope) {
     ADD_PTYPE("type", TYPE_TYPE);
     ADD_PTYPE("auto", TYPE_INFER);
     ADD_PTYPE("any", TYPE_ANY);
-    
+        
     ADD_PTYPE("void", TYPE_VOID);
     ADD_PTYPE("bool", TYPE_BOOL);
     ADD_PTYPE("u8", TYPE_U8);

@@ -1,23 +1,23 @@
 typedef struct {
-    FILE *fp;
+    FILE *file;
 } FileInStream;
 
 #define this ((FileInStream*)vthis)
 
 int FileInStream_getc(void *vthis) {
-    return fgetc(this->fp);
+    return fgetc(this->file);
 }
 
 Size FileInStream_read(void *vthis, DataBuffer buf) {
-    return fread(buf.data, 1, buf.size, this->fp);
+    return fread(buf.data, 1, buf.size, this->file);
 }
 
 bool FileInStream_end(void *vthis) {
-    return feof(this->fp) != 0;
+    return feof(this->file) != 0;
 }
 
 void FileInStream_close(void *vthis) {
-    fclose(this->fp);
+    fclose(this->file);
 }
 
 #undef this
@@ -30,7 +30,7 @@ const IInStream IFileInStream = {
 };
 
 void FileInStream_create(FileInStream *this, FILE *fp) {
-    this->fp = fp;
+    this->file = fp;
 }
 
 FileInStream FileInStream_new(FILE *fp) {
@@ -39,7 +39,9 @@ FileInStream FileInStream_new(FILE *fp) {
     return this;
 }
 
-InStream FileInStream_InStream(FileInStream *this) {
-    InStream instream = { &IFileInStream, this };
-    return instream;
+InStream FileInStream_upcast(FileInStream *this) {
+    return (InStream) {
+        .interface = &IFileInStream,
+        .object = (void*)this
+    };
 }

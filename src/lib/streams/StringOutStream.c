@@ -44,9 +44,11 @@ StringOutStream StringOutStream_new(Allocator allocator) {
     return this;
 }
 
-OutStream StringOutStream_OutStream(StringOutStream *this) {
-    OutStream outstream = { &IStringOutStream, this };
-    return outstream;
+OutStream StringOutStream_upcast(StringOutStream *this) {
+    return (OutStream) {
+        .interface = &IStringOutStream,
+        .object = (void*)this
+    };
 }
 
 void StringOutStream_copy(StringOutStream *this, String *string) {

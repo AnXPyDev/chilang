@@ -66,7 +66,7 @@ DelimOutStream DelimOutStream_new(OutStream parent, StringView delimiter) {
     return result;
 }
 
-OutStream DelimOutStream_OutStream(DelimOutStream *this) {
+OutStream DelimOutStream_upcast(DelimOutStream *this) {
     return (OutStream) {
         .interface = &IDelimOutStream,
         .object = (void*)this

@@ -10,7 +10,7 @@ void std_streams_init() {
     fos_stdout = FileOutStream_new(stdout);
     fis_stdin = FileInStream_new(stdin);
 
-    os_stderr = FileOutStream_OutStream(&fos_stderr);
-    os_stdout = FileOutStream_OutStream(&fos_stdout);
-    is_stdin = FileInStream_InStream(&fis_stdin);
+    os_stderr = FileOutStream_upcast(&fos_stderr);
+    os_stdout = FileOutStream_upcast(&fos_stdout);
+    is_stdin = FileInStream_upcast(&fis_stdin);
 }

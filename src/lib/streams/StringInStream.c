@@ -29,7 +29,8 @@ const IInStream IStringInStream = {
     .getc = &StringInStream_getc,
     .read = &StringInStream_read,
     .end = &StringInStream_end,
-    .close = NULL
+    .close = NULL,
+    .info = NULL
 };
 
 void StringInStream_create(StringInStream *this, CDataBuffer buf) {
@@ -48,7 +49,9 @@ StringInStream StringInStream_newString(const String *string) {
     return StringInStream_new(String_view(string));
 }
 
-InStream StringInStream_InStream(StringInStream *this) {
-    InStream instream = { &IStringInStream, this };
-    return instream;
+InStream StringInStream_upcast(StringInStream *this) {
+    return (InStream) {
+        .interface = &IStringInStream,
+        .object = (void*)this
+    };
 }

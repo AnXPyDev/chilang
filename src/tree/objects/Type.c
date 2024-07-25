@@ -33,7 +33,7 @@ TypedObject TypeObject_create(Type type, Allocator allocator) {
     *copy = Type_copy(type, allocator);
 
     return (TypedObject) {
-        .type = PrimitiveType_Type(TYPE_TYPE),
+        .type = PrimitiveType_upcast(TYPE_TYPE),
         .object = (Object) {
             .interface = &ITypeObject,
             .target = (void*)copy
