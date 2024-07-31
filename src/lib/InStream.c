@@ -25,7 +25,9 @@ bool InStream_end(InStream this) {
 }
 
 void InStream_close(InStream this) {
-    this.interface->close(this.object);
+    if (this.interface->close != NULL) {
+        this.interface->close(this.object);
+    }
 }
 
 void *InStream_info(InStream this) {

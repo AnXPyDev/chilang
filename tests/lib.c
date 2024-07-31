@@ -53,14 +53,15 @@ void test_stream() {
     FileOutStream out = FileOutStream_new(stderr);
     StringOutStream sw = StringOutStream_new(standardAllocator);
 
-    OutStream out1 = FileOutStream_OutStream(&out);
-    OutStream out2 = StringOutStream_OutStream(&sw);
+    OutStream out1 = FileOutStream_upcast(&out);
+    OutStream out2 = StringOutStream_upcast(&sw);
 
     write_message(out1);
     write_message(out2);
 
     String s = String_new(standardAllocator);
-    StringOutStream_move(&sw, &s);
+    StringOutStream_copy(&sw, &s);
+    StringOutStream_destroy(&sw);
 
     OutStream_putc(out1, '\n');
     OutStream_puts(out1, String_begin(&s));
@@ -122,9 +123,9 @@ void test_format() {
 
 int main() {
     std_streams_init();
-    //test_vector();
-    //test_map();
-    //test_stream();
-    test_format();
+    test_vector();
+    test_map();
+    test_stream();
+    //test_format();
     return 0;
 }

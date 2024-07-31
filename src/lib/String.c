@@ -1,3 +1,13 @@
+//#define LIB_STRING_ZERO_COMPAT
+
+#ifdef LIB_STRING_ZERO_COMPAT
+#define STRING_ZERO false
+#define STRING_PAD 0
+#else
+#define STRING_ZERO true
+#define STRING_PAD 1
+#endif
+
 typedef struct {
     Allocator allocator;
     Size length;
@@ -5,12 +15,23 @@ typedef struct {
     char *data;
 } String;
 
+StringView String_view(const String *this) {
+    return (StringView) {
+        .data = this->data,
+        .size = this->length
+    };
+}
+
 const String String_NULL = {
     .allocator = Allocator_NULL,
     .length = 0,
     .capacity = 0,
     .data = NULL
 };
+
+
+#define String_begin(this) ((this)->data)
+#define String_end(this) ((this)->data + (this)->length)
 
 bool String_isNull(String *this) {
     return this->data == NULL;
@@ -29,53 +50,6 @@ String String_new(Allocator allocator) {
     return this;
 }
 
-void String_zero(String *this) {
-    this->data[this->length] = 0;
-}
-
-void String_normalize(String *this) {
-    if (this->length > this->capacity) {
-        this->length = this->capacity;
-    }
-
-    String_zero(this);
-}
-
-
-void String_blank(String *this, Size capacity) {
-    this->data = Allocator_malloc(this->allocator, capacity + 1);
-    this->capacity = capacity;
-    this->length = 0;
-    String_zero(this);
-}
-
-void String_copy_buffer(String *this, const void *buffer, Size length) {
-    this->data = Allocator_malloc(this->allocator, length + 1);
-    this->length = length;
-    this->capacity = length;
-    memcpy(this->data, buffer, length);
-    String_zero(this);
-}
-
-void String_cstring(String *this, const char *str) {
-    Size length = strlen(str);
-    String_copy_buffer(this, str, length);
-}
-
-void String_move_buffer(String *this, void *buffer, Size bufsize, Size length) {
-    this->data = buffer;
-    this->length = length;
-    this->capacity = bufsize - 1;
-    if (this->capacity <= this->length) {
-        this->data = Allocator_realloc(this->allocator, this->data, this->length + 1);
-    }
-    String_zero(this);
-}
-
-void String_copy(String *this, const String *other) {
-    String_copy_buffer(this, other->data, other->length);
-}
-
 void String_destroy(String *this) {
     this->capacity = 0;
     this->length = 0;
@@ -83,59 +57,44 @@ void String_destroy(String *this) {
     this->data = NULL;
 }
 
-char *String_begin(String *this) {
-    return this->data;
-}
-
-char *String_end(String *this) {
-    return this->data + this->length;
-}
-
-void String_resize(String *this, Size capacity) {
-    this->data = Allocator_realloc(this->allocator, this->data, capacity + 1);
-    this->capacity = capacity;
-    if (this->length > this->capacity) {
-        this->length = this->capacity;
+void String_zero(String *this) {
+    if (!STRING_ZERO) {
+        return;
     }
+
+    this->data[this->length] = 0;
+}
+
+void String_blank(String *this, Size capacity) {
+    this->data = Allocator_malloc(this->allocator, capacity + STRING_PAD);
+    this->capacity = capacity;
+    this->length = 0;
     String_zero(this);
 }
 
-void String_append_buffer(String *this, const void *buf, Size length) {
-    Size newlen = length + this->length;
+void String_copy(String *this, StringView other) {
+    this->data = Allocator_malloc(this->allocator, other.size + STRING_PAD);
+    this->length = other.size;
+    this->capacity = other.size;
+    memcpy(this->data, other.data, other.size);
+    String_zero(this);
+}
+
+
+void String_append(String *this, StringView other) {
+    Size newlen = other.size + this->length;
     if (newlen > this->capacity) {
-        String_resize(this, newlen);
+        this->data = Allocator_realloc(this->allocator, this->data, newlen + STRING_PAD);
+        this->capacity = newlen;
     }
-    memcpy(String_end(this), buf, length);
+    memcpy(String_end(this), other.data, other.size);
     this->length = newlen;
     String_zero(this);
-}
-
-void String_append(String *this, const char *str) {
-    String_append_buffer(this, str, strlen(str));
-}
-
-void String_join(String *this, String *other) {
-    String_append_buffer(this, other->data, other->length);
 }
 
 void String_print(const String *this, OutStream outstream) {
     OutStream_puts(outstream, this->data);
 }
 
-void String_print_void(const void *vthis, OutStream outstream) {
-    String_print((const String*)vthis, outstream);
-}
-
-Printable String_Printable(const String *this) {
-    return (Printable) {
-        .print = &String_print_void,
-        .object = (const void*)this
-    };
-}
-
-StringView String_view(const String *this) {
-    return (StringView) {
-        .data = this->data,
-        .size = this->length
-    };
-}
+#undef STRING_PAD
+#undef STRING_ZERO

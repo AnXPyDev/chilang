@@ -1,3 +1,5 @@
+#define ELEMENT(index) (this->data + this->item_size * (index))
+
 typedef struct {
     Allocator allocator;
     Size item_size;
@@ -26,10 +28,21 @@ void Vector_init(Vector *this, Size capacity) {
     this->data = Allocator_malloc(this->allocator, this->item_size * this->capacity);
 }
 
+void Vector_copy(Vector *this, VectorView other) {
+    this->data = Allocator_malloc(this->allocator, other.size * this->item_size);
+    memcpy(this->data, other.data, other.size * this->item_size);
+    this->capacity = other.size;
+    this->size = other.size;
+}
+
 void Vector_nullify(Vector *this) {
     this->data = NULL;
     this->size = 0;
     this->capacity = 0;
+}
+
+bool Vector_isNull(Vector *this) {
+    return this->data == NULL;
 }
 
 void Vector_destroy(Vector *this) {
@@ -46,13 +59,7 @@ void Vector_resize(Vector *this, Size capacity) {
 }
 
 void Vector_expand(Vector *this) {
-    if (LIBDEBUG) {
-        fprintf(stderr, "Vector_expand %p %llu -> ", (void*)this, this->capacity);
-    }
     this->capacity = (this->capacity + 1) * 2;
-    if (LIBDEBUG) {
-        fprintf(stderr, "%llu\n", this->capacity);
-    }
     this->data = Allocator_realloc(this->allocator, this->data, this->item_size * this->capacity);
 }
 
@@ -70,26 +77,25 @@ void Vector_expand_to(Vector *this, Size capacity) {
 }
 
 void *Vector_push(Vector *this) {
-    if (LIBDEBUG) {
-        fprintf(stderr, "Vector_push %p %llu %llu\n", (void*)this, this->size, this->capacity);
-    }
-
     if (this->size + 1 > this->capacity) {
         Vector_expand(this);
     }
     this->size++;
-    return this->data + this->item_size * (this->size - 1);
+    return ELEMENT(this->size - 1);
 }
 
 void *Vector_push_unsafe(Vector *this) {
     this->size++;
-    return this->data + this->item_size * (this->size - 1);
+    return ELEMENT(this->size - 1);
 }
 
-void Vector_pop(Vector *this) {
+void *Vector_pop(Vector *this) {
     if (this->size > 0) {
         this->size--;
+        return ELEMENT(this->size);
     }
+
+    return NULL;
 }
 
 void *Vector_get(Vector *this, Size index) {
@@ -97,7 +103,7 @@ void *Vector_get(Vector *this, Size index) {
         return NULL;
     }
 
-    return this->data + this->item_size * index;
+    return ELEMENT(index);
 }
 
 const void *Vector_cget(const Vector *this, Size index) {
@@ -105,39 +111,26 @@ const void *Vector_cget(const Vector *this, Size index) {
         return NULL;
     }
 
-    return this->data + this->item_size * index;
+    return ELEMENT(index);
 }
 
-void *Vector_begin(Vector *this) {
-    return this->data;
-}
+#define Vector_begin(this) ((this)->data)
+#define Vector_end(this) ((this)->data + (this)->item_size * (this)->size)
 
-void *Vector_end(Vector *this) {
-    return this->data + this->item_size * this->size;
-}
-
-const void *Vector_cbegin(const Vector *this) {
-    return this->data;
-}
-
-const void *Vector_cend(const Vector *this) {
-    return this->data + this->item_size * this->size;
-}
-
-void Vector_join(Vector *this, const void *data, Size count) {
-    if (this->capacity < this->size + count) {
-        Vector_resize(this, this->size + count);
+void Vector_join(Vector *this, VectorView other) {
+    if (this->capacity < this->size + other.size) {
+        Vector_resize(this, this->size + other.size);
     }
-    memcpy(Vector_end(this), data, this->item_size * count);
-    this->size += count;
+    memcpy(Vector_end(this), other.data, this->item_size * other.size);
+    this->size += other.size;
 }
 
-void Vector_append(Vector *this, const void *data, Size count) {
-    if (this->capacity < this->size + count) {
-        Vector_expand_to(this, this->size + count);
+void Vector_append(Vector *this, VectorView other) {
+    if (this->capacity < this->size + other.size) {
+        Vector_expand_to(this, this->size + other.size);
     }
-    memcpy(Vector_end(this), data, this->item_size * count);
-    this->size += count;
+    memcpy(Vector_end(this), other.data, this->item_size * other.size);
+    this->size += other.size;
 }
 
 void Vector_remove(Vector *this, Size index) {
@@ -150,7 +143,7 @@ void Vector_remove(Vector *this, Size index) {
         return;
     }
 
-    memmove(this->data + index * this->item_size, this->data + this->item_size * (index + 1), this->item_size * (this->size - index - 1));
+    memmove(ELEMENT(index), ELEMENT(index + 1), this->item_size * (this->size - index - 1));
     this->size--;
 }
 
@@ -158,33 +151,21 @@ void Vector_clear(Vector *this) {
     this->size = 0;
 }
 
-void Vector_move_buffer(Vector *this, void *buffer, Size capacity, Size size) {
-    this->data = buffer;
-    this->capacity = capacity;
-    this->size = size;
-}
 
-void Vector_copy_buffer(Vector *this, void *buffer, Size size) {
-    this->data = Allocator_malloc(this->allocator, size * this->item_size);
-    memcpy(this->data, buffer, size * this->item_size);
-    this->capacity = size;
-    this->size = size;
-}
-
-void Vector_copy(Vector *this, Vector *other) {
-    Vector_copy_buffer(this, other->data, other->size);
-}
-
-Array Vector_Array(Vector *this) {
+Array Vector_array(Vector *this) {
     return (Array) {
         .data = this->data,
         .size = this->size
     };
 }
 
-CArray Vector_CArray(const Vector *this) {
+VectorView Vector_view(const Vector *this) {
     return (CArray) {
         .data = this->data,
         .size = this->size
     };
 }
+
+#undef ELEMENT
+
+#define Vector_static(arr) ((Vector) { .allocator = staticAllocator, .item_size = sizeof(arr[0]), .size = 0, .capacity = ARRSIZE(arr), .data = (void*)&arr[0] })

@@ -1,0 +1,1 @@
+#define PARSER_TOKEN_MAX_LEN 64

@@ -1,4 +1,8 @@
-#define MAP_BUCKETS 16
+#ifndef LIB_MAP_BUCKETS
+#define LIB_MAP_BUCKETS 16
+#endif
+
+#define MAP_BUCKETS LIB_MAP_BUCKETS
 
 #define ENTRY_ITEM(entry) ((char*)entry + sizeof(struct Map_Entry))
 #define ENTRY_KEY(entry, item_size) (ENTRY_ITEM(entry) + item_size)
@@ -235,3 +239,4 @@ void *Map_foreach_stable_kv(Map *this, Map_kvloop_fn loop, void *payload) {
 #undef ENTRY_ITEM
 #undef ENTRY_KEY
 #undef MAP_BUCKET
+#undef MAP_BUCKETS

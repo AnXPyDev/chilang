@@ -5,6 +5,7 @@
 
 #include "Allocator.c"
 #include "allocators/Standard.c"
+#include "allocators/Static.c"
 
 #include "OutStream.c"
 #include "InStream.c"

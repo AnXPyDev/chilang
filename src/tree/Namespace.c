@@ -1,3 +1,5 @@
+/*
+
 typedef struct {
     Allocator allocator;
     Scope scope;
@@ -11,3 +13,5 @@ void Namespace_create(Namespace *this, Allocator allocator, Scope *global, Scope
 void Namespace_destroy(Namespace *this) {
     Scope_destroy(&this->scope);
 }
+
+*/

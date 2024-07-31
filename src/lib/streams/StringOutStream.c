@@ -9,7 +9,7 @@ void StringOutStream_putc(void *vthis, int c) {
 }
 
 void StringOutStream_write(void *vthis, CDataBuffer buf) {
-    Vector_append(&this->buffer, buf.data, buf.size);
+    Vector_append(&this->buffer, (CArray) { .data = (const void*)buf.data, .size = buf.size });
 }
 
 void StringOutStream_puts(void *vthis, const char *str) {
@@ -52,11 +52,9 @@ OutStream StringOutStream_upcast(StringOutStream *this) {
 }
 
 void StringOutStream_copy(StringOutStream *this, String *string) {
-    String_copy_buffer(string, this->buffer.data, this->buffer.size);
+    String_copy(string, CArray_CDataBuffer(Vector_view(&this->buffer)));
 }
 
-void StringOutStream_move(StringOutStream *this, String *string) {
-    String_move_buffer(string, this->buffer.data, this->buffer.capacity, this->buffer.size);
-    Vector_nullify(&this->buffer);
-    StringOutStream_close(this);
+void StringOutStream_destroy(StringOutStream *this) {
+    Vector_destroy(&this->buffer);
 }

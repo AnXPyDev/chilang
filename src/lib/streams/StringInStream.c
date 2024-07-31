@@ -6,7 +6,15 @@ typedef struct {
 
 #define this ((StringInStream*)vthis)
 
+bool StringInStream_end(void *vthis) {
+    return this->ptr > this->end;
+}
+
 int StringInStream_getc(void *vthis) {
+    if (this->ptr >= this->end) {
+        this->ptr++;
+        return EOF;
+    }
     int c = *this->ptr;
     this->ptr++;
     return c;
@@ -19,9 +27,6 @@ Size StringInStream_read(void *vthis, DataBuffer buf) {
     return copied;
 }
 
-bool StringInStream_end(void *vthis) {
-    return this->ptr >= this->end;
-}
 
 #undef this
 

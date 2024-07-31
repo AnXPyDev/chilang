@@ -6,6 +6,8 @@
 int main ( int argc, char **argv ) {
     std_streams_init();
 
+    OutStream logStream = os_stderr;
+
     Allocator allocator = standardAllocator;
 
     Scope globalScope;
@@ -22,7 +24,7 @@ int main ( int argc, char **argv ) {
 
     Unit unit;
 
-    ParserResult result = Parser_parseUnit(&parser, &unit, os_stdin);
+    ParserResult result = Parser_parseUnit(&parser, is_stdin, strview("\\stdin"), &unit);
 
     if (!ParserResult_isSuccess(result)) {
         OutStream_puts(logStream, "Parser failed: ");

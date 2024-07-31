@@ -43,6 +43,16 @@ void OutStream_puts(OutStream this, const char *s) {
     OutStream_write(this, strview(s));
 }
 
+void OutStream_writes(OutStream this, CDataBuffer buf) {
+    if (buf.data == NULL) {
+        OutStream_puts(this, "(null)");
+        return;
+    }
+
+    OutStream_write(this, buf);
+}
+
+
 void OutStream_flush(OutStream this) {
     if (this.interface->flush != NULL) {
         this.interface->flush(this.object);
@@ -57,17 +67,20 @@ void OutStream_close(OutStream this) {
     }
 }
 
-void OutStream_begin_item(OutStream this) {
+void OutStream_beginItem(OutStream this) {
     if (this.interface->begin_item != NULL) {
         this.interface->begin_item(this.object);
     }
 }
 
-void OutStream_end_item(OutStream this) {
+void OutStream_endItem(OutStream this) {
     if (this.interface->end_item != NULL) {
         this.interface->end_item(this.object);
     }
 }
+
+#define OutStream_begin_item OutStream_beginItem
+#define OutStream_end_item OutStream_endItem
 
 void OutStream_print(OutStream this, Printable printable) {
     printable.print(printable.object, this);
