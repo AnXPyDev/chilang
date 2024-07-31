@@ -54,3 +54,16 @@ bool ParserUtil_isTokenBeginChar(ParserChar c) {
 
     return true;
 }
+
+bool ParserUtil_isExpressionBeginChar(ParserChar c) {
+    return !ParserUtil_isWhitespace(c);
+}
+
+bool ParserUtil_isExpressionEndChar(ParserChar c) {
+    switch (c) {
+        case ';':
+            return true;
+    }
+
+    return false;
+}
