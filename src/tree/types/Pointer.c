@@ -33,13 +33,20 @@ TypeInfo PointerType_info(void *vthis) {
     return info;    
 }
 
+#define other ((PointerType*)vother)
+bool PointerType_equal(void *vthis, void *vother) {
+    return Type_equal(this->type, other->type);
+}
+#undef other
+
 #undef this
 
 const IType IPointerType = {
     .destroy = &PointerType_destroy,
     .repr = &PointerType_repr,
     .copy = &PointerType_copy,
-    .info = &PointerType_info
+    .info = &PointerType_info,
+    .equal = &PointerType_equal
 };
 
 Type PointerType_wrap(Type type, Allocator allocator) {

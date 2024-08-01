@@ -3,7 +3,7 @@ typedef struct {
     Expression *items;
 } SequenceExpression;
 
-Expression SequenceExpression_Expression(SequenceExpression *this);
+Expression SequenceExpression_upcast(SequenceExpression *this);
 
 #define this ((SequenceExpression*)vthis)
 
@@ -31,7 +31,7 @@ Expression SequenceExpression_copy(void *vthis, Allocator allocator) {
         copy->items[i] = Expression_copy(this->items[i], allocator);
     }
 
-    return SequenceExpression_Expression(copy);
+    return SequenceExpression_upcast(copy);
 }
 
 #undef this
@@ -43,7 +43,7 @@ const IExpression ISequenceExpression = {
 };
 
 Expression SequenceExpression_upcast(SequenceExpression *this) {
-    return (Expresison) {
+    return (Expression) {
         .interface = &ISequenceExpression,
         .object = (void*)this 
     };

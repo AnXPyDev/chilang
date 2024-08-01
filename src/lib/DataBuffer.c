@@ -1,26 +1,25 @@
 typedef struct {
     char *data;
     Size size;
-} DataBuffer;
+} Buffer;
 
 typedef struct {
     const char *data;
     Size size;
-} CDataBuffer;
+} BufferView;
 
-typedef CDataBuffer StringView;
+typedef Buffer DataBuffer;
+typedef BufferView CDataBuffer;
+typedef Buffer StringBuffer;
+typedef BufferView StringView;
 
-const DataBuffer DataBuffer_NULL = {
+const Buffer Buffer_NULL = {
     .data = NULL,
     .size = 0
 };
 
-const CDataBuffer CDataBuffer_NULL = {
-    .data = NULL,
-    .size = 0
-};
-
-const StringView StringView_NULL = CDataBuffer_NULL;
+#define DataBuffer_NULL Buffer_NULL
+#define CDataBuffer_NULL Buffer_NULL
 
 StringView strview(const char *str) {
     return (StringView) {
@@ -37,35 +36,43 @@ typedef struct {
 typedef struct {
     const void *data;
     Size size;
-} CArray;
+} ArrayView;
+
+typedef ArrayView CArray;
+typedef ArrayView VectorView;
 
 const Array Array_NULL = {
     .data = NULL,
     .size = 0
 };
 
-const CArray CArray_NULL = {
-    .data = NULL,
-    .size = 0
-};
+#define CArray_NULL Array_NULL
 
-
-CArray CDataBuffer_CArray(CDataBuffer buf) {
-    return (CArray) {
+ArrayView BufferView_toArray(BufferView buf) {
+    return (ArrayView) {
         .data = (const void*)buf.data,
         .size = buf.size
     };
 }
 
-CDataBuffer CArray_CDataBuffer(CArray arr) {
-    return (CDataBuffer) {
+BufferView ArrayView_toBuffer(CArray arr) {
+    return (BufferView) {
         .data = (const char*)arr.data,
         .size = arr.size
     };
 }
 
-typedef CArray VectorView;
+BufferView Buffer_view(Buffer buf) {
+    return (BufferView) {
+        .size = buf.size,
+        .data = buf.data
+    };
+}
+
+#define CArray_CDataBuffer ArrayView_toBuffer
+#define CDataBuffer_CArray BufferView_toArray
 
 #define toArray(arr) ((Array) { .data = &arr[0], .size = ARRSIZE(arr) } )
-#define toCArray(arr) ((CArray) { .data = &arr[0], .size = ARRSIZE(arr) } )
+#define toArrayView(arr) ((ArrayView) { .data = &arr[0], .size = ARRSIZE(arr) } )
 
+#define toCArray toArrayView

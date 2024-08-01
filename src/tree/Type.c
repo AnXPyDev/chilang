@@ -11,6 +11,7 @@ typedef struct {
     void (*destroy)(void *this, Allocator allocator);
     struct Type (*copy)(void *this, Allocator allocator);
     void (*repr)(void *this, OutStream stream);
+    bool (*equal)(void *this, void *other);
     TypeInfo (*info)(void *this);
 } IType;
 
@@ -42,6 +43,14 @@ Type Type_copy(Type this, Allocator allocator) {
 
 TypeInfo Type_info(Type this) {
     return this.interface->info(this.object);
+}
+
+bool Type_equal(Type this, Type other) {
+    if (this.interface != other.interface) {
+        return false;
+    }
+
+    return this.interface->equal(this.object, other.object);
 }
 
 Size Type_size(Type this) {

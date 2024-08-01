@@ -14,6 +14,7 @@ typedef enum {
     TYPE_INFER,
     TYPE_DISCARD,
     TYPE_ANY,
+    TYPE_TOKEN,
 
     // SIMPLE
 
@@ -41,6 +42,7 @@ const char *PrimitiveType_REPRS[TYPE__END] = {
     [TYPE_INFER] = "<infer>",
     [TYPE_DISCARD] = "<discard>",
     [TYPE_ANY] = "<any>",
+    [TYPE_TOKEN] = "<token>",
 
     [TYPE_VOID] = "void",
     [TYPE_BOOL] = "bool",
@@ -64,6 +66,7 @@ const TypeInfo PrimitiveType_INFOS[TYPE__END] = {
     [TYPE_INFER] = { .valid = true, .meta = true, .size_known = false, .size = 0 },
     [TYPE_DISCARD] = { .valid = true, .meta = true, .size_known = false, .size = 0 },
     [TYPE_ANY] = { .valid = true, .meta = true, .size_known = false, .size = 0 },
+    [TYPE_TOKEN] = { .valid = true, .meta = true, .size_known = false, .size = 0 },
     
     [TYPE_VOID] = { .valid = true, .meta = false, .size_known = true, .size = 0 },
     [TYPE_BOOL] = { .valid = true, .meta = false, .size_known = true, .size = sizeof(bool) },
@@ -91,6 +94,7 @@ PrimitiveType PrimitiveType_TYPES[TYPE__END] = {
     [TYPE_INFER] = { .type = TYPE_INFER },
     [TYPE_DISCARD] = { .type = TYPE_DISCARD },
     [TYPE_ANY] = { .type = TYPE_ANY },
+    [TYPE_TOKEN] = { .type = TYPE_TOKEN },
     
     [TYPE_VOID] = { .type = TYPE_VOID },
     [TYPE_BOOL] = { .type = TYPE_BOOL },
@@ -118,13 +122,21 @@ Type PrimitiveType_copy(void *vthis, Allocator allocator) {
     return PrimitiveType_upcast(this->type);
 }
 
+#define other ((PrimitiveType*)vother)
+
+bool PrimitiveType_equal(void *vthis, void *vother) {
+    return this->type == other->type;
+}
+
+#undef other
 #undef this
 
 const IType IPrimitiveType = {
     .repr = &PrimitiveType_repr,
     .info = &PrimitiveType_info,
     .destroy = &PrimitiveType_destroy,
-    .copy = &PrimitiveType_copy
+    .copy = &PrimitiveType_copy,
+    .equal = &PrimitiveType_equal
 };
 
 Type PrimitiveType_upcast(EPrimitiveType type) {
@@ -138,6 +150,11 @@ bool Type_isPrimitive(Type this) {
     return this.interface == &IPrimitiveType;
 }
 
+
 bool PrimitiveType_is(PrimitiveType *this, EPrimitiveType type) {
     return this->type == type;
+}
+
+bool Type_isPrimitiveS(Type this, EPrimitiveType type) {
+    return Type_isPrimitive(this) && PrimitiveType_is((PrimitiveType*)this.object, type);
 }

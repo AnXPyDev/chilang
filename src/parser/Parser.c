@@ -8,7 +8,10 @@ void Parser_create(Parser *this) {
 
 }
 
-ParserResult Parser_readToken(Parser *this, ParserInStream *stream, Scope *scope, Vector *buffer) {
+ParserResult Parser_readToken(Parser *this, ParserInStream *stream, Scope *scope, DataBuffer *buffer) {
+    char *bp = buffer->data;
+    Size s = 0;
+
     while (1) {
         ParserChar c = ParserInStream_getc(stream);
 
@@ -17,14 +20,29 @@ ParserResult Parser_readToken(Parser *this, ParserInStream *stream, Scope *scope
             break;
         }
 
-        *(char*)Vector_push(buffer) = (char)c;
+        if (s + 1 > PARSER_TOKEN_MAX_LEN) {
+            return (ParserResult) {
+                .code = 1,
+                .message = "Token too large",
+                .payload = NULL
+            };
+        }
+
+        *bp = (char)c;
+        bp++;
+        s++;
     }
+
+    buffer->size = s;
 
     return ParserResult_Success;
 }
 
 ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope *scope, Expression *expression) {
     ParserResult result = ParserResult_Success;
+
+    Vector tokens = Vector_new(this->allocator, sizeof(StringView));
+    Vector_init(&tokens, 16);
 
     while (1) {
         ParserChar c = ParserInStream_getc(stream);
@@ -43,33 +61,37 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
 
         continue;
         read_token: {
-            char _buffer[PARSER_TOKEN_MAX_LEN];
-            Vector buffer = Vector_static(_buffer);
-            Object object = Object_NULL;
+            StringBuffer buffer = (StringBuffer) {
+                .size = 0,
+                .data = (char*)Allocator_malloc(this->allocator, PARSER_TOKEN_MAX_LEN)
+            };
 
             result = Parser_readToken(this, stream, scope, &buffer);
 
             if (!ParserResult_isSuccess(result)) {
-                return result;
+                goto cleanup;
             }
 
-            StringView token = CArray_CDataBuffer(Vector_view(&buffer));
-
-            Member *member = Scope_get_member(scope, token);
-
-            if (member) {
-                OutStream_puts(this->logStream, "found member: ");
-                Type_repr(member->type, this->logStream);
-                OutStream_putc(this->logStream, ' ');
-                OutStream_write(this->logStream, token);
-                OutStream_putc(this->logStream, '\n');
-            } else {
-                OutStream_puts(this->logStream, "found token: ");
-                OutStream_write(this->logStream, token);
-                OutStream_putc(this->logStream, '\n');
-            }
+            *(StringBuffer*)Vector_push(&tokens) = buffer;
         };
     }
+
+    
+    {
+        OutStream_puts(this->logStream, "Found Tokens: ");
+        StringBuffer *end = (StringBuffer*)Vector_end(&tokens);
+        for (StringBuffer *token = (StringBuffer*)Vector_begin(&tokens); token < end; token++) {
+            OutStream_write(this->logStream, Buffer_view(*token));
+            OutStream_puts(this->logStream, " ");
+        }
+    }
+
+    cleanup: {
+        StringBuffer *end = (StringBuffer*)Vector_end(&tokens);
+        for (StringBuffer *token = (StringBuffer*)Vector_begin(&tokens); token < end; token++) {
+            Allocator_free(this->allocator, token->data);
+        }
+    };
 
     return result;
 }
@@ -98,22 +120,35 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
             result = Parser_parseExpression(this, stream, scope, &expression);
 
             if (!ParserResult_isSuccess(result)) {
-                goto cleanup;
+                goto error;
             }
 
             if (!Expression_isNull(expression)) {
                 *(Expression*)Vector_push(&expressions) = expression;
             }
-
-            OutStream_puts(this->logStream, "found expression\n");
         };
     }
 
-    cleanup:;
+    SequenceExpression *seq = (SequenceExpression*)Allocator_malloc(this->allocator, sizeof(SequenceExpression));
+    *seq = (SequenceExpression) {
+        .size = expressions.size,
+        .items = (Expression*)expressions.data
+    };
 
-    Vector_destroy(&expressions);
+    *expression = SequenceExpression_upcast(seq);
 
     return result;
+
+    error: {
+        Expression *end = (Expression*)Vector_end(&expressions);
+        for (Expression *exp = (Expression*)Vector_begin(&expressions); exp < end; exp++) {
+            Expression_destroy(*exp, this->allocator);
+        }
+
+        Vector_destroy(&expressions);
+        return result;
+    };
+
 }
 
 ParserResult Parser_parseUnit(Parser *this, InStream is, StringView path, Unit *unit) {

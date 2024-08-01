@@ -6,6 +6,7 @@
 #include "types/Struct.c"
 
 #include "Expression.c"
+#include "expressions/Sequence.c"
 
 #include "Object.c"
 

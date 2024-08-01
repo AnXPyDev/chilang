@@ -25,6 +25,10 @@ TypeQualifiers TypeQualifiers_make(uint32_t flags) {
     };
 }
 
+bool TypeQualifiers_equal(TypeQualifiers q1, TypeQualifiers q2) {
+    return q1._const == q2._const;
+}
+
 Type QualifierType_wrap_copy(TypeQualifiers qualifiers, Type type, Allocator allocator);
 
 #define this ((QualifierType*)vthis)
@@ -50,13 +54,21 @@ Type QualifierType_copy(void *vthis, Allocator allocator) {
     return QualifierType_wrap_copy(this->qualifiers, this->type, allocator); 
 }
 
+#define other ((QualifierType*)vother)
+
+bool QualifierType_equal(void *vthis, void *vother) {
+    return TypeQualifiers_equal(this->qualifiers, other->qualifiers) && Type_equal(this->type, other->type);
+}
+
+#undef other
 #undef this
 
 const IType IQualifierType = {
     .repr = &QualifierType_repr,
     .destroy = &QualifierType_destroy,
     .info = &QualifierType_info,
-    .copy = &QualifierType_copy
+    .copy = &QualifierType_copy,
+    .equal = &QualifierType_equal
 };
 
 bool Type_isQualifier(Type type) {

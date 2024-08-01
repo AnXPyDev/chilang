@@ -38,3 +38,14 @@ void Allocator_free(Allocator this, void *mem) {
 void Allocator_destroy(Allocator this) {
     this.interface->destroy(this.object);
 }
+
+DataBuffer Allocator_copy(Allocator this, CDataBuffer buf) {
+    DataBuffer result = {
+        .size = buf.size,
+        .data = (char*)Allocator_malloc(this, buf.size)
+    };
+
+    memcpy(result.data, buf.data, result.size);
+
+    return result;
+}
