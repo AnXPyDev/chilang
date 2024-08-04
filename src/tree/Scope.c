@@ -26,6 +26,10 @@ Member *Scope_get_member(Scope *this, StringView token) {
     return member;
 }
 
+Member *Scope_get_local_member(Scope *this, StringView token) {
+    return MemberList_get(&this->members, token);
+}
+
 Member *Scope_add_member(Scope *this, StringView token) {
     return MemberList_add(&this->members, token);
 }

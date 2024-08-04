@@ -28,9 +28,13 @@ int main ( int argc, char **argv ) {
 
     if (!ParserResult_isSuccess(result)) {
         OutStream_puts(logStream, "Parser failed: ");
-        OutStream_puts(logStream, result.message);
+        OutStream_puts(logStream, ParserCode_REPRS[result.code]);
         OutStream_putc(logStream, '\n');
+        return 1;
     }
+
+    Scope_repr(&unit.scope, logStream);
+    OutStream_putc(logStream, '\n');
 
     return 0;
 }

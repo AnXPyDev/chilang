@@ -28,7 +28,7 @@ void Vector_init(Vector *this, Size capacity) {
     this->data = Allocator_malloc(this->allocator, this->item_size * this->capacity);
 }
 
-void Vector_copy(Vector *this, VectorView other) {
+void Vector_copy(Vector *this, ArrayView other) {
     this->data = Allocator_malloc(this->allocator, other.size * this->item_size);
     memcpy(this->data, other.data, other.size * this->item_size);
     this->capacity = other.size;
@@ -117,7 +117,7 @@ const void *Vector_cget(const Vector *this, Size index) {
 #define Vector_begin(this) ((this)->data)
 #define Vector_end(this) ((this)->data + (this)->item_size * (this)->size)
 
-void Vector_join(Vector *this, VectorView other) {
+void Vector_join(Vector *this, ArrayView other) {
     if (this->capacity < this->size + other.size) {
         Vector_resize(this, this->size + other.size);
     }
@@ -125,7 +125,7 @@ void Vector_join(Vector *this, VectorView other) {
     this->size += other.size;
 }
 
-void Vector_append(Vector *this, VectorView other) {
+void Vector_append(Vector *this, ArrayView other) {
     if (this->capacity < this->size + other.size) {
         Vector_expand_to(this, this->size + other.size);
     }
@@ -159,8 +159,8 @@ Array Vector_array(Vector *this) {
     };
 }
 
-VectorView Vector_view(const Vector *this) {
-    return (CArray) {
+ArrayView Vector_view(const Vector *this) {
+    return (ArrayView) {
         .data = this->data,
         .size = this->size
     };

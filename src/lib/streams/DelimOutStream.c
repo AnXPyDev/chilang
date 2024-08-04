@@ -14,7 +14,7 @@ void DelimOutStream_puts(void *vthis, const char *str) {
     OutStream_puts(this->os, str);
 }
 
-void DelimOutStream_write(void *vthis, CDataBuffer buf) {
+void DelimOutStream_write(void *vthis, BufferView buf) {
     OutStream_write(this->os, buf);
 }
 

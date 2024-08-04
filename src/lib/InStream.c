@@ -1,6 +1,6 @@
 typedef struct {
     int (*getc)(void *this);
-    Size (*read)(void *this, DataBuffer buf);
+    Size (*read)(void *this, Buffer buf);
     bool (*end)(void *this);
     void (*close)(void *this);
     void *(*info)(void *this);
@@ -16,7 +16,7 @@ int InStream_getc(InStream this) {
     return this.interface->getc(this.object);
 }
 
-Size InStream_read(InStream this, DataBuffer buf) {
+Size InStream_read(InStream this, Buffer buf) {
     return this.interface->read(this.object, buf);
 }
 

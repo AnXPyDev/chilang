@@ -8,7 +8,7 @@ int FileInStream_getc(void *vthis) {
     return fgetc(this->file);
 }
 
-Size FileInStream_read(void *vthis, DataBuffer buf) {
+Size FileInStream_read(void *vthis, Buffer buf) {
     return fread(buf.data, 1, buf.size, this->file);
 }
 

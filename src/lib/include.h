@@ -1,11 +1,13 @@
 #include "config.h"
 
 #include "Util.c"
-#include "DataBuffer.c"
+#include "Buffer.c"
 
 #include "Allocator.c"
 #include "allocators/Standard.c"
 #include "allocators/Static.c"
+
+#include "BufferUtil.c"
 
 #include "OutStream.c"
 #include "InStream.c"

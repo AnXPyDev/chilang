@@ -1,7 +1,7 @@
 typedef struct {
     void (*putc)(void *this, int c);
     void (*puts)(void *this, const char *s);
-    void (*write)(void *this, CDataBuffer buf);
+    void (*write)(void *this, BufferView buf);
     void (*flush)(void *this);
     void (*close)(void *this);
 
@@ -23,7 +23,7 @@ void OutStream_putc(OutStream this, int c) {
     this.interface->putc(this.object, c);
 }
 
-void OutStream_write(OutStream this, CDataBuffer buf) {
+void OutStream_write(OutStream this, BufferView buf) {
     if (this.interface->write != NULL) {
         this.interface->write(this.object, buf);
         return;
@@ -43,7 +43,7 @@ void OutStream_puts(OutStream this, const char *s) {
     OutStream_write(this, strview(s));
 }
 
-void OutStream_writes(OutStream this, CDataBuffer buf) {
+void OutStream_writes(OutStream this, BufferView buf) {
     if (buf.data == NULL) {
         OutStream_puts(this, "(null)");
         return;

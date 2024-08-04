@@ -34,7 +34,7 @@ ParserChar ParserInStream_getc(ParserInStream *this) {
         c = (ParserChar)InStream_getc(this->stream);
     }
 
-    if (ParserUtil_isNewline(c)) {
+    if (ParserChar_isNewline(c)) {
         *(uint32_t*)Vector_push(&this->lineLengths) = this->character;
         this->line++;
         this->character = 0;
@@ -50,7 +50,7 @@ void ParserInStream_ungetc(ParserInStream *this, ParserChar c) {
         return;
     }
 
-    if (ParserUtil_isNewline(c)) {
+    if (ParserChar_isNewline(c)) {
         this->line--;
         this->character = *(uint32_t*)Vector_pop(&this->lineLengths);
     } else {

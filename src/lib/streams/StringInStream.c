@@ -20,7 +20,7 @@ int StringInStream_getc(void *vthis) {
     return c;
 }
 
-Size StringInStream_read(void *vthis, DataBuffer buf) {
+Size StringInStream_read(void *vthis, Buffer buf) {
     Size copied = MIN2(buf.size, this->end - this->ptr);
     memcpy(buf.data, this->ptr, copied);
     this->ptr += copied;
@@ -38,13 +38,13 @@ const IInStream IStringInStream = {
     .info = NULL
 };
 
-void StringInStream_create(StringInStream *this, CDataBuffer buf) {
+void StringInStream_create(StringInStream *this, BufferView buf) {
     this->begin = buf.data;
     this->end = buf.data + buf.size;
     this->ptr = buf.data;
 }
 
-StringInStream StringInStream_new(CDataBuffer buf) {
+StringInStream StringInStream_new(BufferView buf) {
     StringInStream this;
     StringInStream_create(&this, buf);
     return this;

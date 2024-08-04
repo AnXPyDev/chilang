@@ -26,7 +26,7 @@ typedef struct {
     struct Map_Entry *buckets[MAP_BUCKETS];
 } Map;
 
-typedef CDataBuffer Map_Key;
+typedef BufferView Map_Key;
 
 void Map_create(Map *this, Allocator allocator, Size item_size) {
     this->allocator = allocator;
@@ -176,9 +176,9 @@ void *Map_foreach(Map *this, void *(*loop)(void *item, void *payload), void *pay
     return NULL;
 }
 
-typedef void *(*Map_kvloop_fn)(CDataBuffer key, void *item, void *payload);
+typedef void *(*Map_kvloop_fn)(BufferView key, void *item, void *payload);
 
-#define CALL_KVLOOP(entry) loop((CDataBuffer) { .data = ENTRY_KEY(entry, this->item_size), .size = entry->key_size }, ENTRY_ITEM(entry), payload)
+#define CALL_KVLOOP(entry) loop((BufferView) { .data = ENTRY_KEY(entry, this->item_size), .size = entry->key_size }, ENTRY_ITEM(entry), payload)
 
 void *Map_foreach_kv(Map *this, Map_kvloop_fn loop, void *payload) {
     for (Size i = 0; i < MAP_BUCKETS; i++) {

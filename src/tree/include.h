@@ -11,9 +11,10 @@
 #include "Object.c"
 
 #include "objects/Type.c"
+#include "objects/Keyword.c"
 
 #include "MemberList.c"
 
 #include "Scope.c"
-#include "Namespace.c"
+#include "ScopeUtil.c"
 #include "Unit.c"

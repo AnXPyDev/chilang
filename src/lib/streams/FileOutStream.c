@@ -13,7 +13,7 @@ void FileOutStream_puts(void *vthis, const char *s) {
     fputs(s, this->file);
 }
 
-void FileOutStream_write(void *vthis, CDataBuffer buf) {
+void FileOutStream_write(void *vthis, BufferView buf) {
     fwrite(buf.data, 1, buf.size, this->file);
 }
 

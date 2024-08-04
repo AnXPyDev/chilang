@@ -17,15 +17,33 @@ const Allocator Allocator_NULL = {
 };
 
 void *Allocator_malloc(Allocator this, Size size) {
-    return this.interface->malloc(this.object, size);
+    void *buf = this.interface->malloc(this.object, size);
+    if (buf == NULL) {
+        fprintf(stderr, "\nAllocation of buffer failed (Allocator_malloc | %llu)\n", size);
+        abort();
+    }
+
+    return buf; 
 }
 
 void *Allocator_calloc(Allocator this, Size size) {
-    return this.interface->calloc(this.object, size);
+    void *buf = this.interface->calloc(this.object, size);
+    if (buf == NULL) {
+        fprintf(stderr, "\nAllocation of buffer failed (Allocator_calloc | %llu)\n", size);
+        abort();
+    }
+
+    return buf;
 }
 
 void *Allocator_realloc(Allocator this, void *mem, Size size) {
-    return this.interface->realloc(this.object, mem, size);
+    void *buf = this.interface->realloc(this.object, mem, size);
+    if (buf == NULL) {
+        fprintf(stderr, "\nAllocation of buffer failed (Allocator_realloc | %llu)\n", size);
+        abort();
+    }
+
+    return buf;
 }
 
 void Allocator_free(Allocator this, void *mem) {
@@ -37,15 +55,4 @@ void Allocator_free(Allocator this, void *mem) {
 
 void Allocator_destroy(Allocator this) {
     this.interface->destroy(this.object);
-}
-
-DataBuffer Allocator_copy(Allocator this, CDataBuffer buf) {
-    DataBuffer result = {
-        .size = buf.size,
-        .data = (char*)Allocator_malloc(this, buf.size)
-    };
-
-    memcpy(result.data, buf.data, result.size);
-
-    return result;
 }

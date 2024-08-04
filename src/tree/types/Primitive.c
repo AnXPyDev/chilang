@@ -15,6 +15,7 @@ typedef enum {
     TYPE_DISCARD,
     TYPE_ANY,
     TYPE_TOKEN,
+    TYPE_PARSER_MAGIC, // TODO REMOVE
 
     // SIMPLE
 

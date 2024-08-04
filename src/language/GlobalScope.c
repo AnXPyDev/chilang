@@ -1,13 +1,5 @@
-void Scope_add_type(Scope *scope, StringView token, Type type) {
-    Member *memb = Scope_add_member(scope, token);
-    TypedObject to = TypeObject_create(type, scope->allocator);
-    memb->type = to.type;
-    memb->object = to.object;
-    memb->qualifiers = MemberQualifiers_NULL;
-    memb->qualifiers._const = true;
-}
-
 #define ADD_PTYPE(token, type) Scope_add_type(scope, strview(token), PrimitiveType_upcast(type))
+#define ADD_KWORD(token, kword) Scope_add_keyword(scope, strview(token), kword)
 
 int GlobalScope_init(Scope *scope) {
     ADD_PTYPE("namespace", TYPE_NAMESPACE);
@@ -28,7 +20,11 @@ int GlobalScope_init(Scope *scope) {
     ADD_PTYPE("i8", TYPE_I8);
     ADD_PTYPE("i32", TYPE_I32);
 
+    ADD_KWORD("=", KEYWORD_ASSIGN);
+    ADD_KWORD("print", KEYWORD_PRINT);
+
     return 0;
 }
 
 #undef ADD_PTYPE
+#undef ADD_KWORD
