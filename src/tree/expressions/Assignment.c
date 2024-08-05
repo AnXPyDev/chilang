@@ -1,4 +1,4 @@
 typedef struct {
     StringView token;
-    Expression token;
+    Expression expression;
 } AssignmentExpression;

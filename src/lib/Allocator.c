@@ -56,3 +56,5 @@ void Allocator_free(Allocator this, void *mem) {
 void Allocator_destroy(Allocator this) {
     this.interface->destroy(this.object);
 }
+
+#define Allocator_new(allocator, T) ((T*)Allocator_malloc((allocator), sizeof(T)))

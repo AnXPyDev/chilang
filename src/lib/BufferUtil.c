@@ -18,7 +18,23 @@ Array Array_alloc_(Size item_size, Size capacity, Allocator allocator) {
 
 #define Array_alloc(T, capacity, allocator) Array_alloc_(sizeof(T), (capacity), (allocator))
 
+void Array_free(Array array, Allocator allocator) {
+    Allocator_free(allocator, array.data);
+}
+
 Buffer Buffer_copy(Buffer this, Allocator allocator) {
+    if (Buffer_isNull(this)) {
+        return Buffer_NULL;
+    }
+    Buffer result = Buffer_alloc(this.size, allocator);
+    memcpy(result.data, this.data, this.size);
+    return result;
+}
+
+Buffer BufferView_copy(BufferView this, Allocator allocator) {
+    if (BufferView_isNull(this)) {
+        return Buffer_NULL;
+    }
     Buffer result = Buffer_alloc(this.size, allocator);
     memcpy(result.data, this.data, this.size);
     return result;

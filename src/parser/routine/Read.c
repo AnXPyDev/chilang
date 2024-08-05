@@ -11,9 +11,7 @@ ParserResult Parser_readToken(Parser *this, ParserInStream *stream, Scope *scope
         }
 
         if (s + 1 > buffer->size) {
-            return (ParserResult) {
-                .code = PARSER_CODE_TOKEN_TOO_LONG
-            };
+            return ParserResult_construct(this, stream, PARSER_CODE_TOKEN_TOO_LONG, BufferView_NULL);
         }
 
         *bp = (char)c;

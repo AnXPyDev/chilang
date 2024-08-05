@@ -12,9 +12,6 @@ ParserResult Parser_parseUnit(Parser *this, InStream is, StringView path, Unit *
     ParserResult result = Parser_parseScope(this, &stream, &unit->scope, &unit->root);
 
     if (!ParserResult_isSuccess(result)) {
-        OutStream_putc(this->logStream, '\n');
-        ParserInStream_describe(&stream, this->logStream);
-        OutStream_putc(this->logStream, '\n');
     }
 
 

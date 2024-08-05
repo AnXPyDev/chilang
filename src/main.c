@@ -8,6 +8,8 @@ int main ( int argc, char **argv ) {
 
     OutStream logStream = os_stderr;
 
+    OutStream_puts(logStream, "chi <3\n");
+
     Allocator allocator = standardAllocator;
 
     Scope globalScope;
@@ -24,17 +26,18 @@ int main ( int argc, char **argv ) {
 
     Unit unit;
 
-    ParserResult result = Parser_parseUnit(&parser, is_stdin, strview("\\stdin"), &unit);
+    ParserResult result = Parser_parseUnit(&parser, is_stdin, strview("stdin"), &unit);
 
-    if (!ParserResult_isSuccess(result)) {
-        OutStream_puts(logStream, "Parser failed: ");
-        OutStream_puts(logStream, ParserCode_REPRS[result.code]);
-        OutStream_putc(logStream, '\n');
-        return 1;
+    if (ParserResult_isSuccess(result)) {
+        Scope_repr(&unit.scope, logStream);
+    } else {
+        ParserResult_repr(result, logStream);
     }
 
-    Scope_repr(&unit.scope, logStream);
     OutStream_putc(logStream, '\n');
+
+    ParserResult_destroy(result, &parser);
+    Parser_destroy(&parser);
 
     return 0;
 }

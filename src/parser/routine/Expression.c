@@ -35,7 +35,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
             continue;
         }
 
-        result = (ParserResult) { .code = PARSER_CODE_UNEXPECTED_CHAR };
+        result = ParserResult_construct_UNEXPECTED_CHAR(this, stream, c);
         goto cleanup;
 
         continue;
@@ -45,7 +45,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
             result = Parser_readToken(this, stream, scope, &buffer);
 
             if (!ParserResult_isSuccess(result)) {
-                goto cleanup;
+                goto error;
             }
 
             *(StringBuffer*)Vector_push(&tokens) = Buffer_copy(buffer, this->allocator);
@@ -55,32 +55,58 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
 
         continue;
         consume_tokens: {
-            StringBuffer *t0 = (StringBuffer*)Vector_get(&tokens, unconsumed_index);
-            if (t0 == NULL) {
-                continue;
+            StringBuffer *t0_ = (StringBuffer*)Vector_get(&tokens, unconsumed_index);
+            if (t0_ == NULL) {
+                goto end_consume_token;
+            }
+            StringView t0 = Buffer_view(*t0_);
+
+            Member *m0 = Scope_get_member(scope, t0);
+
+            // one token
+            
+            if (m0 == NULL) {
+                result = ParserResult_construct_TOKEN_UNKNOWN(this, stream, t0);
+                goto error;
             }
 
-            Member *m0 = Scope_get_member(scope, Buffer_view(*t0));
-
-            // first token references type member
-            if (m0 != NULL && Type_isPrimitiveS(m0->type, TYPE_TYPE)) {
-                StringBuffer *t1 = (StringBuffer*)Vector_get(&tokens, unconsumed_index + 1);
-                if (t1 == NULL) {
-                    continue;
-                }
-
-                Member *m1 = Scope_get_local_member(scope, Buffer_view(*t1));
-
-                // second token is unused -> member declaration
-                if (m1 == NULL) {
-                    Type type = *(Type*)m0->object.target;
-                    Member *member = Scope_add_member(scope, Buffer_view(*t1));
-                    member->type = Type_copy(type, scope->allocator);
-                    member->object = Object_NULL;
-                    unconsumed_index++;
-                }
-
+            StringBuffer *t1_ = (StringBuffer*)Vector_get(&tokens, unconsumed_index + 1);
+            if (t1_ == NULL) {
+                goto end_consume_token;
             }
+            StringView t1 = Buffer_view(*t1_);
+            
+            Member *m1 = Scope_get_member(scope, t1);
+
+            // second token is keyword
+            if (m1 != NULL && Type_isPrimitiveS(m1->type, TYPE_KEYWORD)) {
+                EKeyword keyword = *(EKeyword*)m1->object.target;
+                switch (keyword) {
+                    //case KEYWORD_ASSIGN:
+                    //case KEYWORD_PRINT:
+                    default:;
+                        result = ParserResult_construct_UNIMPLEMENTED(this, stream, strview(Keyword_REPRS[keyword]));
+                        goto error;
+                }
+            }
+
+            // first token references type and second token is undeclared -> member declaration 
+            if (m1 == NULL && Type_isPrimitiveS(m0->type, TYPE_TYPE)) {
+                Type type = *(Type*)m0->object.target;
+                Member *member = Scope_add_member(scope, t1);
+                member->type = Type_copy(type, scope->allocator);
+                member->object = Object_NULL;
+                unconsumed_index++;
+                goto end_consume_token;
+            }
+
+            if (m1 == NULL) {
+                result = ParserResult_construct_TOKEN_UNKNOWN(this, stream, t1);
+                goto error;
+            }
+            
+
+            end_consume_token:;
         };
 
         continue;
@@ -88,7 +114,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
             Expression literal = Expression_NULL;
             result = Parser_parseLiteral(this, stream, &literal);
             if (!ParserResult_isSuccess(result)) {
-                goto cleanup;
+                goto error;
             }
         };
     }
@@ -109,11 +135,26 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
     }
     */
 
+    {
+        StringBuffer *t0 = Vector_get(&tokens, unconsumed_index);
+        if (t0 == NULL) {
+            goto cleanup;
+        }
+
+        Member *m0 = Scope_get_member(scope, Buffer_view(*t0));
+
+        if (m0 != NULL) {
+            
+        }
+    };
+
+    error:;
     cleanup: {
         StringBuffer *end = (StringBuffer*)Vector_end(&tokens);
         for (StringBuffer *token = (StringBuffer*)Vector_begin(&tokens); token < end; token++) {
             Buffer_free(*token, this->allocator);
         }
+        Vector_destroy(&tokens);
     };
 
     return result;

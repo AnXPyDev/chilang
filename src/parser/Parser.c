@@ -5,3 +5,4 @@ typedef struct {
 } Parser;
 
 void Parser_create(Parser *this) {}
+void Parser_destroy(Parser *this) {}

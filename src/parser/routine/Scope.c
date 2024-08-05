@@ -31,7 +31,7 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
         };
     }
 
-    SequenceExpression *seq = (SequenceExpression*)Allocator_malloc(this->allocator, sizeof(SequenceExpression));
+    SequenceExpression *seq = Allocator_new(this->allocator, SequenceExpression);
     *seq = (SequenceExpression) {
         .size = expressions.size,
         .items = (Expression*)expressions.data
@@ -50,6 +50,5 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
         Vector_destroy(&expressions);
         return result;
     };
-
 }
 

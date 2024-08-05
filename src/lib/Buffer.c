@@ -8,11 +8,6 @@ typedef struct {
     Size size;
 } BufferView;
 
-/*
-typedef Buffer DataBuffer;
-typedef BufferView CDataBuffer;
-*/
-
 typedef Buffer StringBuffer;
 typedef BufferView StringView;
 
@@ -21,10 +16,10 @@ const Buffer Buffer_NULL = {
     .size = 0
 };
 
-/*
-#define DataBuffer_NULL Buffer_NULL 
-#define CDataBuffer_NULL Buffer_NULL
-*/
+const BufferView BufferView_NULL = {
+    .data = NULL,
+    .size = 0
+};
 
 StringView strview(const char *str) {
     return (StringView) {
@@ -43,17 +38,10 @@ typedef struct {
     Size size;
 } ArrayView;
 
-/*
-typedef ArrayView CArray;
-typedef ArrayView VectorView;
-*/
-
 const Array Array_NULL = {
     .data = NULL,
     .size = 0
 };
-
-//#define CArray_NULL Array_NULL
 
 ArrayView BufferView_toArray(BufferView buf) {
     return (ArrayView) {
@@ -69,6 +57,13 @@ BufferView CharArrayView_toBuffer(ArrayView arr) {
     };
 }
 
+Buffer CharArray_toBuffer(Array arr) {
+    return (Buffer) {
+        .data = (char*)arr.data,
+        .size = arr.size
+    };
+}
+
 BufferView Buffer_view(Buffer buf) {
     return (BufferView) {
         .size = buf.size,
@@ -76,20 +71,18 @@ BufferView Buffer_view(Buffer buf) {
     };
 }
 
-/*
-#define CArray_CDataBuffer ArrayView_toBuffer
-#define CDataBuffer_CArray BufferView_toArray
-*/
+bool BufferView_isNull(BufferView buf) {
+    return buf.data == NULL;
+}
+
+bool Buffer_isNull(Buffer buf) {
+    return buf.data == NULL;
+}
 
 #define toBuffer(arr) ((Buffer) { .data = &arr[0], .size = sizeof(arr) })
 #define toBufferView(arr) ((BufferView) { .data = &arr[0], .size = sizeof(arr) })
 #define toArray(arr) ((Array) { .data = &arr[0], .size = ARRSIZE(arr) })
 #define toArrayView(arr) ((ArrayView) { .data = &arr[0], .size = ARRSIZE(arr) })
 
-/*
-#define toCArray toArrayView
-*/
-
 #define LocalBuffer(sz) ((Buffer) { .data = (char[sz]) {0}, .size = (sz) })
 #define LocalArray(T, sz) ((Array) { .data = (T[sz]) {0}, .size = (sz) })
-

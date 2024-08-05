@@ -1,4 +1,8 @@
 typedef struct {
-    StringView token;
+    Type result;
+    StringBuffer token;
 } GetExpression;
 
+#define this ((GetExpression*)vthis)
+
+#undef this

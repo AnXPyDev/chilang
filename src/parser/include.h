@@ -5,10 +5,9 @@
 #include "ParserChar.c"
 #include "ParserInStream.c"
 
-#include "ParserResult.c"
-
-
 #include "Parser.c"
+#include "ParserResult.c"
+#include "ParserResultUtil.c"
 
 #include "routine/Read.c"
 #include "routine/Literal.c"

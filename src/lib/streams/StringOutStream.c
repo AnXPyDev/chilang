@@ -58,3 +58,9 @@ void StringOutStream_copy(StringOutStream *this, String *string) {
 void StringOutStream_destroy(StringOutStream *this) {
     Vector_destroy(&this->buffer);
 }
+
+BufferView StringOutStream_view(StringOutStream *this) {
+    return CharArrayView_toBuffer(Vector_view(&this->buffer));
+}
+
+#define QuickSOS(name, allocator) StringOutStream_create(&name, (allocator)); OutStream os_##name = StringOutStream_upcast(&name);

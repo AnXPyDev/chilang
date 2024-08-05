@@ -19,5 +19,4 @@ int main() {
     fprintf(stderr, "%s\n", b.data);
 
     return 0;
-
 }
