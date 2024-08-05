@@ -1,0 +1,1 @@
+ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope *scope, Type desiredType, Expression *out_expression);

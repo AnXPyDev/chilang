@@ -21,3 +21,7 @@ ParserResult ParserResult_construct_UNEXPECTED_CHAR(Parser *parser, ParserInStre
     snprintf(message, ARRSIZE(message), "Unexpected character '%c'", (char)c);
     return ParserResult_construct(parser, stream, PARSER_CODE_UNEXPECTED_CHAR, strview(message));    
 }
+
+ParserResult ParserResult_construct_INTERNAL_ERROR(Parser *parser, ParserInStream *stream) {
+    return ParserResult_construct(parser, stream, PARSER_CODE_INTERNAL_ERROR, BufferView_NULL);
+}

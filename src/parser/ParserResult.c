@@ -1,5 +1,6 @@
 typedef enum {
     PARSER_CODE_SUCCESS = 0,
+    PARSER_CODE_INTERNAL_ERROR,
     PARSER_CODE_UNEXPECTED_CHAR,
     PARSER_CODE_TOKEN_TOO_LONG,
     PARSER_CODE_TOKEN_UNKNOWN,
@@ -10,6 +11,7 @@ typedef enum {
 
 const char *ParserCode_REPRS[PARSER_CODE__END] = {
     [PARSER_CODE_SUCCESS] = "Success",
+    [PARSER_CODE_INTERNAL_ERROR] = "Internal error",
     [PARSER_CODE_UNEXPECTED_CHAR] = "Unexpected character",
     [PARSER_CODE_TOKEN_TOO_LONG] = "Token too long",
     [PARSER_CODE_TOKEN_UNKNOWN] = "Token unknown",
@@ -35,7 +37,7 @@ ParserResult ParserResult_construct(Parser *parser, ParserInStream *stream, EPar
         .path = stream->path,
         .line = stream->line,
         .character = stream->character,
-        .message = BufferView_copy(message, parser->allocator)
+        .message = Buffer_copy(message, parser->allocator)
     };
 
     return (ParserResult) {

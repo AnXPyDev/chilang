@@ -5,7 +5,7 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
 
     while (1) {
         ParserChar c = ParserInStream_getc(stream);
-        if (c == PARSER_EOF) {
+        if (c == PARSER_EOF || ParserChar_isBlockEnd(c)) {
             break;
         }
 
@@ -19,7 +19,7 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
 
             Expression expression = Expression_NULL;
 
-            result = Parser_parseExpression(this, stream, scope, &expression);
+            result = Parser_parseExpression(this, stream, scope, Type_NULL, &expression);
 
             if (!ParserResult_isSuccess(result)) {
                 goto error;
@@ -31,13 +31,20 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
         };
     }
 
-    SequenceExpression *seq = Allocator_new(this->allocator, SequenceExpression);
-    *seq = (SequenceExpression) {
-        .size = expressions.size,
-        .items = (Expression*)expressions.data
-    };
-
-    *expression = SequenceExpression_upcast(seq);
+    switch (expressions.size) {
+        default:;
+            SequenceExpression *seq = Allocator_new(this->allocator, SequenceExpression);
+            *seq = (SequenceExpression) {
+                .size = expressions.size,
+                .items = (Expression*)expressions.data
+            };
+            *expression = SequenceExpression_upcast(seq);
+            break;
+        case 1:;
+            *expression = *(Expression*)Vector_get(&expressions, 0);
+        case 0:;
+            Vector_destroy(&expressions);
+    }
 
     return result;
 

@@ -34,6 +34,8 @@ void LiteralExpression_repr(void *vthis, OutStream os) {
     OutStream_putc(os, ')');
 }
 
+#undef this
+
 const IExpression ILiteralExpression = {
     .copy = &LiteralExpression_copy,
     .type = &LiteralExpression_type,

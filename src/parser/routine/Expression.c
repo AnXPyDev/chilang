@@ -1,4 +1,4 @@
-ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope *scope, Expression *expression) {
+ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope *scope, Type desiredType, Expression *expression) {
     ParserResult result = ParserResult_Success;
 
     Vector tokens = Vector_new(this->allocator, sizeof(StringBuffer));
@@ -48,7 +48,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
                 goto error;
             }
 
-            *(StringBuffer*)Vector_push(&tokens) = Buffer_copy(buffer, this->allocator);
+            *(StringBuffer*)Vector_push(&tokens) = Buffer_copy(Buffer_view(buffer), this->allocator);
 
             goto consume_tokens;
         };
@@ -70,14 +70,14 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
                 goto error;
             }
 
-            if (Type_isPrimitveS(m0->type, TYPE_KEYWORD)) {
-                EKeyword keyword = *(EKeyword*)m1->object.target;
+            if (Type_isPrimitiveS(m0->type, TYPE_KEYWORD)) {
+                EKeyword keyword = *(EKeyword*)m0->object.target;
                 switch (keyword) {
                     case KEYWORD_PRINT:
-                        result = Parser_parsePrintExpression(this, stream, scope, t0, expression);
+                        result = Parser_parsePrintExpression(this, stream, scope, expression);
                         goto cleanup;
                     default:;
-                        result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t1);
+                        result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t0);
                         goto error;
                 }
             } 
