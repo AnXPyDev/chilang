@@ -21,7 +21,7 @@ int StringInStream_getc(void *vthis) {
 }
 
 Size StringInStream_read(void *vthis, Buffer buf) {
-    Size copied = MIN2(buf.size, this->end - this->ptr);
+    Size copied = MIN2(buf.size, (Size)(this->end - this->ptr));
     memcpy(buf.data, this->ptr, copied);
     this->ptr += copied;
     return copied;

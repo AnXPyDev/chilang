@@ -4,18 +4,18 @@
 
 #define MAP_BUCKETS LIB_MAP_BUCKETS
 
-#define ENTRY_ITEM(entry) ((char*)entry + sizeof(struct Map_Entry))
+#define ENTRY_ITEM(entry) ((entry)->tail)
 #define ENTRY_KEY(entry, item_size) (ENTRY_ITEM(entry) + item_size)
 
-typedef unsigned int Map_Hash;
-typedef unsigned int Map_EntryIndex;
+typedef uint32_t Map_Hash;
+typedef uint32_t Map_EntryIndex;
 
 typedef struct Map_Entry {
     struct Map_Entry *next;
     Map_EntryIndex index;
     Map_Hash hash;
     Size key_size;
-    // data[Map.item_size]; data[key_size]
+    char tail[];
 } Map_Entry;
 
 typedef struct {
@@ -64,7 +64,8 @@ Map_Hash Map_hash(Map_Key key) {
 
     Map_Hash hash = 5381;
 	while ( size != 0 ) {
-        hash = ((hash << 5) + hash) + *data;
+        Map_Hash val = (Map_Hash)*data;
+        hash = ((hash << 5) + hash) + val;
         data++;
         size--;
 	}

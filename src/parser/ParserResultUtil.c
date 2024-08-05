@@ -4,6 +4,12 @@ ParserResult ParserResult_construct_TOKEN_UNKNOWN(Parser *parser, ParserInStream
     return ParserResult_construct(parser, stream, PARSER_CODE_TOKEN_UNKNOWN, strview(message));
 }
 
+ParserResult ParserResult_construct_TOKEN_UNEXPECTED(Parser *parser, ParserInStream *stream, StringView token) {
+    char message[256];
+    snprintf(message, ARRSIZE(message), "Unexpected token '%.*s'", (int)token.size, token.data);
+    return ParserResult_construct(parser, stream, PARSER_CODE_TOKEN_UNEXPECTED, strview(message));
+}
+
 ParserResult ParserResult_construct_UNIMPLEMENTED(Parser *parser, ParserInStream *stream, StringView feature) {
     char message[256];
     snprintf(message, ARRSIZE(message), "Unimplemented feature '%.*s'", (int)feature.size, feature.data);

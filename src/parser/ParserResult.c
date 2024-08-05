@@ -3,6 +3,7 @@ typedef enum {
     PARSER_CODE_UNEXPECTED_CHAR,
     PARSER_CODE_TOKEN_TOO_LONG,
     PARSER_CODE_TOKEN_UNKNOWN,
+    PARSER_CODE_TOKEN_UNEXPECTED,
     PARSER_CODE_UNIMPLEMENTED,
     PARSER_CODE__END
 } EParserCode;
@@ -12,6 +13,7 @@ const char *ParserCode_REPRS[PARSER_CODE__END] = {
     [PARSER_CODE_UNEXPECTED_CHAR] = "Unexpected character",
     [PARSER_CODE_TOKEN_TOO_LONG] = "Token too long",
     [PARSER_CODE_TOKEN_UNKNOWN] = "Token unknown",
+    [PARSER_CODE_TOKEN_UNEXPECTED] = "Token unexpected",
     [PARSER_CODE_UNIMPLEMENTED] = "Unimplemented"
 };
 

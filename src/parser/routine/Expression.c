@@ -70,6 +70,18 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
                 goto error;
             }
 
+            if (Type_isPrimitveS(m0->type, TYPE_KEYWORD)) {
+                EKeyword keyword = *(EKeyword*)m1->object.target;
+                switch (keyword) {
+                    case KEYWORD_PRINT:
+                        result = Parser_parsePrintExpression(this, stream, scope, t0, expression);
+                        goto cleanup;
+                    default:;
+                        result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t1);
+                        goto error;
+                }
+            } 
+
             StringBuffer *t1_ = (StringBuffer*)Vector_get(&tokens, unconsumed_index + 1);
             if (t1_ == NULL) {
                 goto end_consume_token;
@@ -82,10 +94,11 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
             if (m1 != NULL && Type_isPrimitiveS(m1->type, TYPE_KEYWORD)) {
                 EKeyword keyword = *(EKeyword*)m1->object.target;
                 switch (keyword) {
-                    //case KEYWORD_ASSIGN:
-                    //case KEYWORD_PRINT:
+                    case KEYWORD_ASSIGN:
+                        result = Parser_parseAssignmentExpression(this, stream, scope, t0, expression);
+                        goto cleanup;
                     default:;
-                        result = ParserResult_construct_UNIMPLEMENTED(this, stream, strview(Keyword_REPRS[keyword]));
+                        result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t1);
                         goto error;
                 }
             }

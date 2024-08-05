@@ -24,6 +24,5 @@
 #include "streams/DelimOutStream.c"
 
 #include "std_streams.c"
-#include "format.c"
 
 #include "Map.c"

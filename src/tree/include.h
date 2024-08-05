@@ -7,6 +7,7 @@
 
 #include "Expression.c"
 #include "expressions/Sequence.c"
+#include "expressions/Literal.c"
 
 #include "Object.c"
 
