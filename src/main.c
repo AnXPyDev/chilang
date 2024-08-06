@@ -30,11 +30,14 @@ int main ( int argc, char **argv ) {
 
     if (ParserResult_isSuccess(result)) {
         Scope_repr(&unit.scope, logStream);
+        OutStream_putc(logStream, '\n');
+        Expression_repr(unit.root, logStream);
+        OutStream_putc(logStream, '\n');
     } else {
         ParserResult_repr(result, logStream);
+        OutStream_putc(logStream, '\n');
     }
 
-    OutStream_putc(logStream, '\n');
 
     ParserResult_destroy(result, &parser);
     Parser_destroy(&parser);

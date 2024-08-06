@@ -1,2 +1,5 @@
-i32 var1;
-i32 var2;
+u32 val;
+u32 val2;
+
+val = 41;
+val2 = val;

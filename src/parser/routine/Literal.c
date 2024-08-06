@@ -20,7 +20,7 @@ int Parser_convertNumericLiteralLE(StringView literal, uint8_t *target, Size cap
         }
 
         if (bitOffset >= capacity) {
-            return -1;
+            return 1;
         }
 
         uint8_t carry = 0;
@@ -36,7 +36,7 @@ int Parser_convertNumericLiteralLE(StringView literal, uint8_t *target, Size cap
     }
 
     *out_bits = bitOffset;
-    return 1;
+    return 0;
 }
 
 ParserResult Parser_parseNumericLiteral(
@@ -71,14 +71,27 @@ ParserResult Parser_parseNumericLiteral(
 
     buffer.size = s;
 
-    uint8_t acc[8] = {0};
-    Size bits;
+    uint8_t value[8] = {0};
+    Size size;
 
-    Parser_convertNumericLiteralLE(Buffer_view(buffer), acc, 8, &bits);
+    if (Parser_convertNumericLiteralLE(Buffer_view(buffer), value, 8, &size)) {
+        return ParserResult_construct(this, stream, PARSER_CODE_INTERNAL_ERROR, strview("convert failed"));
+    }
 
-    fprintf(stderr, "numeric literal %d %llu\n", *(int*)acc, bits);
+    if (!Type_isUnsignedInteger(desiredType)) {
+        return ParserResult_construct(this, stream, PARSER_CODE_INTERNAL_ERROR, strview("bad type"));
+    }
 
-    return ParserResult_construct_INTERNAL_ERROR(this, stream);
+    TypeInfo ti = Type_info(desiredType);
+    size = size / 8 + (size % 8 > 0);
+
+    if (size > ti.size) {
+        return ParserResult_construct(this, stream, PARSER_CODE_INTERNAL_ERROR, strview("integer literal too large for type"));
+    }
+    
+    *out_expression = LiteralExpression_create(desiredType, (char*)value, this->allocator);
+
+    return ParserResult_Success;
 }
 
 
