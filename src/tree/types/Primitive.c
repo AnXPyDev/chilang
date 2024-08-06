@@ -159,3 +159,25 @@ bool PrimitiveType_is(PrimitiveType *this, EPrimitiveType type) {
 bool Type_isPrimitiveS(Type this, EPrimitiveType type) {
     return Type_isPrimitive(this) && PrimitiveType_is((PrimitiveType*)this.object, type);
 }
+
+bool PrimitiveType_isSignedInteger(EPrimitiveType type) {
+    switch (type) {
+        case TYPE_I8:
+        case TYPE_I32:
+            return true;
+        default:;
+    }
+
+    return false;
+}
+
+bool PrimitiveType_isUnsignedInteger(EPrimitiveType type) {
+    switch (type) {
+        case TYPE_U8:
+        case TYPE_U32:
+            return true;
+        default:;
+    }
+
+    return false;
+}

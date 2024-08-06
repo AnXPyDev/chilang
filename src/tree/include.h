@@ -5,6 +5,8 @@
 #include "types/Qualifier.c"
 #include "types/Struct.c"
 
+#include "TypeUtil.c"
+
 #include "Expression.c"
 #include "expressions/Sequence.c"
 #include "expressions/Literal.c"

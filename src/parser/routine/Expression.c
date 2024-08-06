@@ -1,4 +1,10 @@
-ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope *scope, Type desiredType, Expression *expression) {
+ParserResult Parser_parseExpression(
+    Parser *this,
+    ParserInStream *stream,
+    Scope *scope, 
+    Type desiredType,
+    Expression *out_expression
+) {
     ParserResult result = ParserResult_Success;
 
     Vector tokens = Vector_new(this->allocator, sizeof(StringBuffer));
@@ -74,7 +80,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
                 EKeyword keyword = *(EKeyword*)m0->object.target;
                 switch (keyword) {
                     case KEYWORD_PRINT:
-                        result = Parser_parsePrintExpression(this, stream, scope, expression);
+                        result = Parser_parsePrintExpression(this, stream, scope, out_expression);
                         goto cleanup;
                     default:;
                         result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t0);
@@ -95,7 +101,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
                 EKeyword keyword = *(EKeyword*)m1->object.target;
                 switch (keyword) {
                     case KEYWORD_ASSIGN:
-                        result = Parser_parseAssignmentExpression(this, stream, scope, t0, expression);
+                        result = Parser_parseAssignmentExpression(this, stream, scope, t0, out_expression);
                         goto cleanup;
                     default:;
                         result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t1);
@@ -124,8 +130,7 @@ ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, Scope 
 
         continue;
         read_literal: {
-            Expression literal = Expression_NULL;
-            result = Parser_parseLiteral(this, stream, &literal);
+            result = Parser_parseLiteral(this, stream, desiredType, out_expression);
             if (!ParserResult_isSuccess(result)) {
                 goto error;
             }
