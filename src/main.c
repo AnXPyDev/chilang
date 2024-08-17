@@ -30,8 +30,9 @@ int main ( int argc, char **argv ) {
 
     if (ParserResult_isSuccess(result)) {
         Scope_repr(&unit.scope, logStream);
-        OutStream_putc(logStream, '\n');
-        Expression_repr(unit.root, logStream);
+        DelimOS(os_delim, logStream, strview("\n"));
+        OutStream_puts(logStream, "\nprogram: \n");
+        Expression_repr(unit.root, os_delim);
         OutStream_putc(logStream, '\n');
     } else {
         ParserResult_repr(result, logStream);

@@ -12,22 +12,30 @@ void Scope_create(Scope *this, Allocator allocator, Scope *global, Scope *parent
     MemberList_create(&this->members, allocator);
 }
 
-Member *Scope_get_member(Scope *this, StringView token) {
-    Member *member = MemberList_get(&this->members, token);
+Member *Scope_get_member(Scope *this, StringView token, TypeMatcher matcher, Type type) {
+    Member *member = MemberList_getMatching(&this->members, token, matcher, type);
     
     if (member == NULL && this->parent != NULL) {
-        member = Scope_get_member(this->parent, token);
+        member = Scope_get_member(this->parent, token, matcher, type);
     }
 
     if (member == NULL && this->global != NULL) {
-        member = Scope_get_member(this->global, token);
+        member = Scope_get_member(this->global, token, matcher, type);
     }
     
     return member;
 }
 
-Member *Scope_get_local_member(Scope *this, StringView token) {
-    return MemberList_get(&this->members, token);
+Member *Scope_get_any_member(Scope *this, StringView token) {
+    return Scope_get_member(this, token, SmartTypeMatcher, PrimitiveType_upcast(TYPE_ANY));
+}
+
+Member *Scope_get_local_member(Scope *this, StringView token, TypeMatcher matcher, Type type) {
+    return MemberList_getMatching(&this->members, token, matcher, type);
+}
+
+Member *Scope_get_any_local_member(Scope *this, StringView token) {
+    return Scope_get_local_member(this, token, SmartTypeMatcher, PrimitiveType_upcast(TYPE_ANY));
 }
 
 Member *Scope_add_member(Scope *this, StringView token) {

@@ -67,7 +67,7 @@ ParserResult Parser_parseExpression(
             }
             StringView t0 = Buffer_view(*t0_);
 
-            Member *m0 = Scope_get_member(scope, t0);
+            Member *m0 = Scope_get_any_member(scope, t0);
 
             // one token
             
@@ -94,7 +94,7 @@ ParserResult Parser_parseExpression(
             }
             StringView t1 = Buffer_view(*t1_);
             
-            Member *m1 = Scope_get_member(scope, t1);
+            Member *m1 = Scope_get_any_member(scope, t1);
 
             // second token is keyword
             if (m1 != NULL && Type_isPrimitiveS(m1->type, TYPE_KEYWORD)) {
@@ -137,33 +137,23 @@ ParserResult Parser_parseExpression(
         };
     }
 
-    /*
     {
-        OutStream_puts(this->logStream, "Found Tokens: ");
-        TokenMember *end = (TokenMember*)Vector_end(&tokens);
-        for (TokenMember *token = (TokenMember*)Vector_begin(&tokens); token < end; token++) {
-            OutStream_write(this->logStream, Buffer_view(token->token));
-            if (token->member != NULL) {
-                OutStream_putc(this->logStream, '(');
-                Type_repr(token->member->type, this->logStream);
-                OutStream_putc(this->logStream, ')');
-            }
-            OutStream_puts(this->logStream, " ");
-        }
-    }
-    */
-
-    {
-        StringBuffer *t0 = Vector_get(&tokens, unconsumed_index);
-        if (t0 == NULL) {
+        StringBuffer *t0_ = Vector_get(&tokens, unconsumed_index);
+        if (t0_ == NULL) {
             goto cleanup;
         }
 
-        Member *m0 = Scope_get_member(scope, Buffer_view(*t0));
+        StringView t0 = Buffer_view(*t0_);
 
-        if (m0 != NULL) {
-            
+        Member *m0 = Scope_get_any_member(scope, t0);
+
+        if (m0 == NULL) {
+            result = ParserResult_construct_TOKEN_UNKNOWN(this, stream, t0);
+            goto error;
         }
+
+        *out_expression = GetExpression_create(m0->type, t0, this->allocator);
+        goto cleanup;
     };
 
     error:;

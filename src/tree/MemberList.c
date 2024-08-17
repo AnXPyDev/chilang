@@ -3,13 +3,15 @@ typedef struct {
     bool _private : 1;
     bool _public : 1;
     bool _const : 1;
+    bool _reserve : 1;
 } MemberQualifiers;
 
 const MemberQualifiers MemberQualifiers_NULL = {
     ._static = false,
     ._private = false,
     ._public = false,
-    ._const = false
+    ._const = false,
+    ._reserve = false
 };
 
 void MemberQualifiers_repr(MemberQualifiers qualifiers, OutStream os) {
@@ -24,6 +26,9 @@ void MemberQualifiers_repr(MemberQualifiers qualifiers, OutStream os) {
     }
     if (qualifiers._const) {
         OutStream_puts(os, "const ");
+    }
+    if (qualifiers._reserve) {
+        OutStream_puts(os, "reserve ");
     }
 }
 
@@ -62,8 +67,35 @@ void MemberList_destroy(MemberList *this, Allocator allocator) {
     Map_destroy(&this->members);
 }
 
-Member *MemberList_get(MemberList *this, StringView token) {
+Member *MemberList_getFirst(MemberList *this, StringView token) {
     return Map_get(&this->members, token);
+}
+
+struct MemberList_args_getMatching_loop {
+    TypeMatcher matcher;
+    Type type;
+};
+
+void *MemberList_callback_getMatching_loop(void *item, void *payload) {
+    Member *member = item;
+    struct MemberList_args_getMatching_loop *args = payload;
+
+    if (TypeMatcher_match(args->matcher, member->type, args->type)) {
+        return item;
+    }
+
+    return NULL;
+}
+
+Member *MemberList_getMatching(MemberList *this, StringView token, TypeMatcher matcher, Type type) {
+    struct MemberList_args_getMatching_loop args = {
+        .matcher = matcher,
+        .type = type
+    };
+    return Map_foreach_matching(&this->members, token,
+        &MemberList_callback_getMatching_loop,
+        &args
+    );
 }
 
 Member *MemberList_add(MemberList *this, StringView token) {
@@ -74,7 +106,7 @@ void *MemberList_member_repr(StringView token, void *item, void *payload) {
     OutStream os = *(OutStream*)payload;
     Member *member = (Member*)item;
 
-    OutStream_begin_item(os);
+    OutStream_beginItem(os);
 
     MemberQualifiers_repr(member->qualifiers, os);
     
@@ -87,13 +119,13 @@ void *MemberList_member_repr(StringView token, void *item, void *payload) {
         Object_repr(member->object, os);
     }
 
-    OutStream_end_item(os);
+    OutStream_endItem(os);
 
     return NULL;
 }
 
 void MemberList_repr(MemberList *this, OutStream os) {
-    Map_foreach_stable_kv(&this->members, &MemberList_member_repr, (void*)&os);
+    Map_foreach_stable_kv(&this->members, &MemberList_member_repr, &os);
 }
 
 #undef PRINT_PAYLOAD

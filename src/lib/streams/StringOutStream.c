@@ -26,11 +26,7 @@ const IOutStream IStringOutStream = {
     .putc = StringOutStream_putc,
     .puts = StringOutStream_puts,
     .write = StringOutStream_write,
-    .flush = NULL,
-    .close = StringOutStream_close,
-    
-    .begin_item = NULL,
-    .end_item = NULL
+    .close = StringOutStream_close
 };
 
 void StringOutStream_create(StringOutStream *this, Allocator allocator) {

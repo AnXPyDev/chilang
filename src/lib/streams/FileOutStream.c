@@ -33,10 +33,7 @@ const IOutStream IFileOutStream = {
     .puts = &FileOutStream_puts,
     .write = &FileOutStream_write,
     .flush = &FileOutStream_flush,
-    .close = &FileOutStream_close,
-    
-    .begin_item = NULL,
-    .end_item = NULL
+    .close = &FileOutStream_close
 };
 
 void FileOutStream_create(FileOutStream *this, FILE *fp) {

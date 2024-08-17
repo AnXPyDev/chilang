@@ -26,19 +26,19 @@ void DelimOutStream_flush(void *vthis) {
     OutStream_flush(this->os);
 }
 
-void DelimOutStream_begin_item(void *vthis) {
-    OutStream_begin_item(this->os);
+void DelimOutStream_beginItem(void *vthis) {
+    OutStream_beginItem(this->os);
 
     if (this->first) {
-        this->first = false;
         return;
     }
 
     OutStream_write(this->os, this->delimiter);
 }
 
-void DelimOutStream_end_item(void *vthis) {
-    OutStream_end_item(this->os);
+void DelimOutStream_endItem(void *vthis) {
+    this->first = false;
+    OutStream_endItem(this->os);
 }
 
 #undef this
@@ -50,8 +50,8 @@ const IOutStream IDelimOutStream = {
     .close = &DelimOutStream_close,
     .flush = &DelimOutStream_flush,
 
-    .begin_item = &DelimOutStream_begin_item,
-    .end_item = &DelimOutStream_end_item
+    .beginItem = &DelimOutStream_beginItem,
+    .endItem = &DelimOutStream_endItem
 };
 
 void DelimOutStream_create(DelimOutStream *this, OutStream parent, StringView delimiter) {
@@ -72,3 +72,5 @@ OutStream DelimOutStream_upcast(DelimOutStream *this) {
         .object = (void*)this
     };
 }
+
+#define DelimOS(name, os, delim) DelimOutStream name##__ = DelimOutStream_new((os), (delim)); OutStream name = DelimOutStream_upcast(&(name##__));

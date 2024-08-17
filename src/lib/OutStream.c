@@ -5,8 +5,8 @@ typedef struct {
     void (*flush)(void *this);
     void (*close)(void *this);
 
-    void (*begin_item)(void *this);
-    void (*end_item)(void *this);
+    void (*beginItem)(void *this);
+    void (*endItem)(void *this);
 } IOutStream;
 
 typedef struct {
@@ -68,19 +68,16 @@ void OutStream_close(OutStream this) {
 }
 
 void OutStream_beginItem(OutStream this) {
-    if (this.interface->begin_item != NULL) {
-        this.interface->begin_item(this.object);
+    if (this.interface->beginItem != NULL) {
+        this.interface->beginItem(this.object);
     }
 }
 
 void OutStream_endItem(OutStream this) {
-    if (this.interface->end_item != NULL) {
-        this.interface->end_item(this.object);
+    if (this.interface->endItem != NULL) {
+        this.interface->endItem(this.object);
     }
 }
-
-#define OutStream_begin_item OutStream_beginItem
-#define OutStream_end_item OutStream_endItem
 
 void OutStream_print(OutStream this, Printable printable) {
     printable.print(printable.object, this);

@@ -7,7 +7,7 @@ ParserResult Parser_parseAssignmentExpression(
 ) {
     Expression expression;
 
-    Member *member = Scope_get_member(scope, token);
+    Member *member = Scope_get_member(scope, token, EqualTypeMatcher, PrimitiveType_upcast(TYPE_ANY));
 
     if (member == NULL) {
         return ParserResult_construct_INTERNAL_ERROR(this, stream);

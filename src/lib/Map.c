@@ -90,8 +90,12 @@ void Map_removeEntry(Map *this, struct Map_Entry **entryp) {
     this->nitems--;
 }
 
-struct Map_Entry *Map_findEntry(Map *this, Map_Hash hash, Map_Key key) {
-    struct Map_Entry *entry = this->buckets[MAP_BUCKET(hash)];
+struct Map_Entry *Map_getBucket(Map *this, Map_Hash hash) {
+    return this->buckets[MAP_BUCKET(hash)];
+}
+
+struct Map_Entry *Map_findEntryInBucket(Map *this, struct Map_Entry *bucket, Map_Hash hash, Map_Key key) {
+    struct Map_Entry *entry = bucket; 
     while (1) {
         if (entry == NULL) { return NULL; }
         if (entry->hash == hash && entry->key_size == key.size && memcmp(ENTRY_KEY(entry, this->item_size), key.data, key.size) == 0) {
@@ -99,6 +103,10 @@ struct Map_Entry *Map_findEntry(Map *this, Map_Hash hash, Map_Key key) {
         }
         entry = entry->next;
     }
+}
+
+struct Map_Entry *Map_findEntry(Map *this, Map_Hash hash, Map_Key key) {
+    return Map_findEntryInBucket(this, Map_getBucket(this, hash), hash, key);
 }
 
 struct Map_Entry **Map_findEntryP(Map *this, Map_Hash hash, Map_Key key) {
@@ -163,7 +171,9 @@ void Map_destroy(Map *this) {
     }
 }
 
-void *Map_foreach(Map *this, void *(*loop)(void *item, void *payload), void *payload) {
+typedef void *(Map_loop_fn)(void *item, void *payload);
+
+void *Map_foreach(Map *this, Map_loop_fn loop, void *payload) {
     for (Size i = 0; i < MAP_BUCKETS; i++) {
         struct Map_Entry *entry = this->buckets[i];
         while (entry) {
@@ -173,6 +183,23 @@ void *Map_foreach(Map *this, void *(*loop)(void *item, void *payload), void *pay
             }
             entry = entry->next;
         }
+    }
+    return NULL;
+}
+
+void *Map_foreach_matching(Map *this, Map_Key key, Map_loop_fn loop, void *payload) {
+    Map_Hash hash = Map_hash(key);
+    struct Map_Entry *bucket = Map_getBucket(this, hash);
+    while (1) {
+        struct Map_Entry *entry = Map_findEntryInBucket(this, bucket, hash, key);
+        if (entry == NULL) {
+            return NULL;
+        }
+        void *r = loop(ENTRY_ITEM(entry), payload);
+        if (r != NULL) {
+            return r;
+        }
+        bucket = entry->next;
     }
     return NULL;
 }

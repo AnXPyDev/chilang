@@ -5,15 +5,20 @@ typedef struct {
 
 Expression PrintExpression_upcast(PrintExpression *this);
 
-Expression PrintExpression_create(Expression expression, Allocator allocator) {
-    PrintExpression *this = Allocator_malloc(sizeof(PrintExpression));
-    e->expression = Expression_copy(expression);
+Expression PrintExpression_create_move(Expression expression, Allocator allocator) {
+    PrintExpression *this = Allocator_malloc(allocator, sizeof(PrintExpression));
+    this->expression = expression;
     return PrintExpression_upcast(this);
 }
 
+Expression PrintExpression_create(Expression expression, Allocator allocator) {
+    return PrintExpression_create_move(Expression_copy(expression, allocator), allocator);
+}
+
+
 #define this ((PrintExpression*)vthis)
 
-Expression PrintExpression_repr(void *vthis, OutStream os) {
+void PrintExpression_repr(void *vthis, OutStream os) {
     OutStream_puts(os, "Print(");
     Expression_repr(this->expression, os);
     OutStream_putc(os, ')');
@@ -28,7 +33,7 @@ void PrintExpression_destroy(void *vthis, Allocator allocator) {
     Allocator_free(allocator, vthis);
 }
 
-void PrintExpression_type(void *vthis, Allocator allocator) {
+Type PrintExpression_type(void *vthis, Allocator allocator) {
     return PrimitiveType_upcast(TYPE_VOID);
 }
 

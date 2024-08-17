@@ -3,3 +3,5 @@ u32 val2;
 
 val = 41;
 val2 = val;
+
+print val2;

@@ -16,9 +16,9 @@ void SequenceExpression_destroy(void *vthis, Allocator allocator) {
 
 void SequenceExpression_repr(void *vthis, OutStream os) {
     for (Size i = 0; i < this->size; i++) {
-        OutStream_begin_item(os);
+        OutStream_beginItem(os);
         Expression_repr(this->items[i], os);
-        OutStream_end_item(os);
+        OutStream_endItem(os);
     }
 }
 
