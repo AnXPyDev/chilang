@@ -5,6 +5,8 @@
 #include "ParserChar.c"
 #include "ParserInStream.c"
 
+#include "ParserFrame.c"
+
 #include "Parser.c"
 #include "ParserResult.c"
 #include "ParserResultUtil.c"
@@ -15,5 +17,5 @@
 #include "routine/Assignment.c"
 #include "routine/Print.c"
 #include "routine/Expression.c"
-#include "routine/Scope.c"
+#include "routine/Frame.c"
 #include "routine/Unit.c"

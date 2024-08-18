@@ -1,7 +1,7 @@
 ParserResult Parser_parseExpression(
     Parser *this,
     ParserInStream *stream,
-    Scope *scope, 
+    ParserFrame *frame,
     Type desiredType,
     Expression *out_expression
 ) {
@@ -48,7 +48,7 @@ ParserResult Parser_parseExpression(
         read_token: {
 
             StringBuffer buffer = LocalBuffer(PARSER_TOKEN_MAX_LEN);
-            result = Parser_readToken(this, stream, scope, &buffer);
+            result = Parser_readToken(this, stream, &buffer);
 
             if (!ParserResult_isSuccess(result)) {
                 goto error;
@@ -67,7 +67,7 @@ ParserResult Parser_parseExpression(
             }
             StringView t0 = Buffer_view(*t0_);
 
-            Member *m0 = Scope_get_any_member(scope, t0);
+            Member *m0 = ParserFrame_getMember(frame, t0, AnyMemberMatcher, SmartTypeMatcher_upcast(&PTYPE_ANY));
 
             // one token
             
@@ -80,7 +80,7 @@ ParserResult Parser_parseExpression(
                 EKeyword keyword = *(EKeyword*)m0->object.target;
                 switch (keyword) {
                     case KEYWORD_PRINT:
-                        result = Parser_parsePrintExpression(this, stream, scope, out_expression);
+                        result = Parser_parsePrintExpression(this, stream, frame, out_expression);
                         goto cleanup;
                     default:;
                         result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t0);
@@ -94,14 +94,14 @@ ParserResult Parser_parseExpression(
             }
             StringView t1 = Buffer_view(*t1_);
             
-            Member *m1 = Scope_get_any_member(scope, t1);
+            Member *m1 = ParserFrame_getMember(frame, t1, AnyMemberMatcher, SmartTypeMatcher_upcast(&PTYPE_ANY));
 
             // second token is keyword
             if (m1 != NULL && Type_isPrimitiveS(m1->type, TYPE_KEYWORD)) {
                 EKeyword keyword = *(EKeyword*)m1->object.target;
                 switch (keyword) {
                     case KEYWORD_ASSIGN:
-                        result = Parser_parseAssignmentExpression(this, stream, scope, t0, out_expression);
+                        result = Parser_parseAssignmentExpression(this, stream, frame, t0, out_expression);
                         goto cleanup;
                     default:;
                         result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t1);
@@ -112,8 +112,8 @@ ParserResult Parser_parseExpression(
             // first token references type and second token is undeclared -> member declaration 
             if (m1 == NULL && Type_isPrimitiveS(m0->type, TYPE_TYPE)) {
                 Type type = *(Type*)m0->object.target;
-                Member *member = Scope_add_member(scope, t1);
-                member->type = Type_copy(type, scope->allocator);
+                Member *member = ParserFrame_addMember(frame, t1);
+                member->type = Type_copy(type, this->allocator);
                 member->object = Object_NULL;
                 unconsumed_index++;
                 goto end_consume_token;
@@ -145,7 +145,7 @@ ParserResult Parser_parseExpression(
 
         StringView t0 = Buffer_view(*t0_);
 
-        Member *m0 = Scope_get_any_member(scope, t0);
+        Member *m0 = ParserFrame_getMember(frame, t0, AnyMemberMatcher, SmartTypeMatcher_upcast(&desiredType));
 
         if (m0 == NULL) {
             result = ParserResult_construct_TOKEN_UNKNOWN(this, stream, t0);

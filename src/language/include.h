@@ -1,3 +1,3 @@
 
 #include "util.c"
-#include "GlobalScope.c"
+#include "GlobalFrame.c"

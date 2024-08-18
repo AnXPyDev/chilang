@@ -15,7 +15,6 @@ typedef enum {
     TYPE_DISCARD,
     TYPE_ANY,
     TYPE_TOKEN,
-    TYPE_PARSER_MAGIC, // TODO REMOVE
 
     // SIMPLE
 
@@ -181,3 +180,5 @@ bool PrimitiveType_isUnsignedInteger(EPrimitiveType type) {
 
     return false;
 }
+
+#define PTYPE_ANY TEMP_LOCAL(Type, PrimitiveType_upcast(TYPE_ANY))

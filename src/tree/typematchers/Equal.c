@@ -1,12 +1,18 @@
-bool EqualTypeMatcher_match(void *this, Type t1, Type t2) {
-    return Type_equal(t1, t2); 
+#define this ((Type*)vthis)
+
+bool EqualTypeMatcher_match(void *vthis, Type type) {
+    return Type_equal(*this, type); 
 }
+
+#undef this
 
 const ITypeMatcher IEqualTypeMatcher = {
     .match = &EqualTypeMatcher_match
 };
 
-const TypeMatcher EqualTypeMatcher = {
-    .interface = &IEqualTypeMatcher,
-    .object = NULL
-};
+TypeMatcher EqualTypeMatcher_upcast(Type *type) {
+    return (TypeMatcher) {
+        .interface = &IEqualTypeMatcher,
+        .object = type
+    };
+}

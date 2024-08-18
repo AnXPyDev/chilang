@@ -12,27 +12,26 @@ int main ( int argc, char **argv ) {
 
     Allocator allocator = standardAllocator;
 
-    Scope globalScope;
-    Scope_create(&globalScope, allocator, NULL, NULL);
-    GlobalScope_init(&globalScope);
+    MemberList globalFrame;
+    MemberList_create(&globalFrame, allocator);
+    GlobalFrame_init(&globalFrame, allocator);
 
     Parser parser = {
         .allocator = allocator,
         .logStream = os_stderr,
-        .globalScope = &globalScope
+        .globalFrame = &globalFrame
     };
 
     Parser_create(&parser);
 
-    Unit unit;
+    Expression rootExpression = Expression_NULL;
 
-    ParserResult result = Parser_parseUnit(&parser, is_stdin, strview("stdin"), &unit);
+    ParserResult result = Parser_parseUnit(&parser, is_stdin, strview("stdin"), &rootExpression);
 
     if (ParserResult_isSuccess(result)) {
-        Scope_repr(&unit.scope, logStream);
-        DelimOS(os_delim, logStream, strview("\n"));
         OutStream_puts(logStream, "\nprogram: \n");
-        Expression_repr(unit.root, os_delim);
+        DelimOS(delim_os, logStream, strview("\n"));
+        Expression_repr(rootExpression, delim_os);
         OutStream_putc(logStream, '\n');
     } else {
         ParserResult_repr(result, logStream);

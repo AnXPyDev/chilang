@@ -1,19 +1,19 @@
 ParserResult Parser_parseAssignmentExpression(
     Parser *this,
     ParserInStream *stream, 
-    Scope *scope,
+    ParserFrame *frame,
     StringView token,
     Expression *out_expression
 ) {
     Expression expression;
 
-    Member *member = Scope_get_member(scope, token, EqualTypeMatcher, PrimitiveType_upcast(TYPE_ANY));
+    Member *member = ParserFrame_getMember(frame, token, AnyMemberMatcher, SmartTypeMatcher_upcast(&PTYPE_ANY));
 
     if (member == NULL) {
         return ParserResult_construct_INTERNAL_ERROR(this, stream);
     }
 
-    ParserResult result = Parser_parseExpression(this, stream, scope, member->type, &expression);
+    ParserResult result = Parser_parseExpression(this, stream, frame, member->type, &expression);
     if (!ParserResult_isSuccess(result)) {
         return result;
     }

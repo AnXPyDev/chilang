@@ -1,4 +1,4 @@
-ParserResult Parser_readToken(Parser *this, ParserInStream *stream, Scope *scope, StringBuffer *buffer) {
+ParserResult Parser_readToken(Parser *this, ParserInStream *stream, StringBuffer *buffer) {
     char *bp = buffer->data;
     Size s = 0;
 

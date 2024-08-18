@@ -71,26 +71,31 @@ Member *MemberList_getFirst(MemberList *this, StringView token) {
     return Map_get(&this->members, token);
 }
 
+#include "MemberMatcher.c"
+
 struct MemberList_args_getMatching_loop {
-    TypeMatcher matcher;
-    Type type;
+    MemberMatcher mm;
+    TypeMatcher tm;
 };
 
 void *MemberList_callback_getMatching_loop(void *item, void *payload) {
     Member *member = item;
     struct MemberList_args_getMatching_loop *args = payload;
 
-    if (TypeMatcher_match(args->matcher, member->type, args->type)) {
+    if (
+        MemberMatcher_match(args->mm, member) &&
+        TypeMatcher_match(args->tm, member->type)
+    ) {
         return item;
     }
 
     return NULL;
 }
 
-Member *MemberList_getMatching(MemberList *this, StringView token, TypeMatcher matcher, Type type) {
+Member *MemberList_getMatching(MemberList *this, StringView token, MemberMatcher mm, TypeMatcher tm) {
     struct MemberList_args_getMatching_loop args = {
-        .matcher = matcher,
-        .type = type
+        .mm = mm,
+        .tm = tm,
     };
     return Map_foreach_matching(&this->members, token,
         &MemberList_callback_getMatching_loop,

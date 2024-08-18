@@ -1,5 +1,13 @@
-ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scope, Expression *expression) {
+ParserResult Parser_parseFrame(Parser *this, ParserInStream *stream, ParserFrame *parentFrame, Expression *out_expression) {
     ParserResult result = ParserResult_Success;
+    
+    FrameExpression *fexpr = FrameExpression_create(Expression_NULL, this->allocator);
+
+    ParserFrame frame = {
+        .parent = parentFrame,
+        .frame = &fexpr->frame
+    };
+
     Vector expressions = Vector_new(this->allocator, sizeof(Expression));
     Vector_init(&expressions, 8);
 
@@ -19,7 +27,7 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
 
             Expression expression = Expression_NULL;
 
-            result = Parser_parseExpression(this, stream, scope, PrimitiveType_upcast(TYPE_ANY), &expression);
+            result = Parser_parseExpression(this, stream, &frame, PTYPE_ANY, &expression);
 
             if (!ParserResult_isSuccess(result)) {
                 goto error;
@@ -38,13 +46,15 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
                 .size = expressions.size,
                 .items = (Expression*)expressions.data
             };
-            *expression = SequenceExpression_upcast(seq);
+            fexpr->expression = SequenceExpression_upcast(seq);
             break;
         case 1:;
-            *expression = *(Expression*)Vector_get(&expressions, 0);
+            fexpr->expression = *(Expression*)Vector_get(&expressions, 0);
         case 0:;
             Vector_destroy(&expressions);
     }
+
+    *out_expression = FrameExpression_upcast(fexpr);
 
     return result;
 
@@ -55,6 +65,7 @@ ParserResult Parser_parseScope(Parser *this, ParserInStream *stream, Scope *scop
         }
 
         Vector_destroy(&expressions);
+        FrameExpression_destroy(fexpr, this->allocator);        
         return result;
     };
 }

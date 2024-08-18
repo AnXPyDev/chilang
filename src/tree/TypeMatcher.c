@@ -1,5 +1,5 @@
 typedef struct {
-    bool (*match)(void *this, Type t1, Type t2);
+    bool (*match)(void *this, Type type);
 } ITypeMatcher;
 
 typedef struct {
@@ -7,6 +7,6 @@ typedef struct {
     void *object;
 } TypeMatcher;
 
-bool TypeMatcher_match(TypeMatcher this, Type t1, Type t2) {
-    return this.interface->match(this.object, t1, t2);
+bool TypeMatcher_match(TypeMatcher this, Type type) {
+    return this.interface->match(this.object, type);
 }

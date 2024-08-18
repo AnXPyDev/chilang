@@ -1,7 +1,6 @@
-#define ADD_PTYPE(token, type) Scope_add_type(scope, strview(token), PrimitiveType_upcast(type))
-#define ADD_KWORD(token, kword) Scope_add_keyword(scope, strview(token), kword)
+#define ADD_PTYPE(token, type) MemberList_add_type(frame, strview(token), PrimitiveType_upcast(type), alc)
 
-int GlobalScope_init(Scope *scope) {
+int GlobalFrame_init(MemberList *frame, Allocator alc) {
     ADD_PTYPE("namespace", TYPE_NAMESPACE);
     ADD_PTYPE("alias", TYPE_ALIAS);
     ADD_PTYPE("interface", TYPE_INTERFACE);
@@ -20,11 +19,7 @@ int GlobalScope_init(Scope *scope) {
     ADD_PTYPE("i8", TYPE_I8);
     ADD_PTYPE("i32", TYPE_I32);
 
-    ADD_KWORD("=", KEYWORD_ASSIGN);
-    ADD_KWORD("print", KEYWORD_PRINT);
-
     return 0;
 }
 
 #undef ADD_PTYPE
-#undef ADD_KWORD
