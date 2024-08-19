@@ -36,25 +36,24 @@ typedef struct {
     MemberQualifiers qualifiers;
     Type type;
     Object object;
+    StringBuffer token;
 } Member;
-
-void Member_copy(Member *this, Member *dst, Allocator allocator) {
-    dst->qualifiers = this->qualifiers;
-    dst->type = Type_copy(this->type, allocator);
-    dst->object = Object_copy_maybe(this->object, allocator);
-}
 
 void Member_destroy(Member *this, Allocator allocator) {
     Type_destroy(this->type, allocator);
     Object_destroy_maybe(this->object, allocator);
+    Buffer_free(this->token, allocator);
 }
 
 typedef struct {
-    Map members;
+    Vector members;
+    Map member_map;
 } MemberList;
 
 void MemberList_create(MemberList *this, Allocator allocator) {
-    Map_create(&this->members, allocator, sizeof(Member));
+    Vector_create(&this->members, allocator, sizeof(Member));
+    Vector_init(&this->members, 8);
+    Map_create(&this->member_map, allocator, sizeof(Member*));
 }
 
 void *MemberList_destroy_member(void *item, void *payload) {
@@ -63,12 +62,16 @@ void *MemberList_destroy_member(void *item, void *payload) {
 }
 
 void MemberList_destroy(MemberList *this, Allocator allocator) {
-    Map_foreach(&this->members, &MemberList_destroy_member, (void*)&allocator);
-    Map_destroy(&this->members);
+    Member *end = Vector_end(&this->members);
+    for (Member *m = Vector_begin(&this->members); m < end; m++) {
+        Member_destroy(m, allocator);
+    }
+    Vector_destroy(&this->members);
+    Map_destroy(&this->member_map);
 }
 
 Member *MemberList_getFirst(MemberList *this, StringView token) {
-    return Map_get(&this->members, token);
+    return *(Member**)Map_get(&this->member_map, token);
 }
 
 #include "MemberMatcher.c"
@@ -79,14 +82,14 @@ struct MemberList_args_getMatching_loop {
 };
 
 void *MemberList_callback_getMatching_loop(void *item, void *payload) {
-    Member *member = item;
+    Member *member = *(Member**)item;
     struct MemberList_args_getMatching_loop *args = payload;
 
     if (
         MemberMatcher_match(args->mm, member) &&
         TypeMatcher_match(args->tm, member->type)
     ) {
-        return item;
+        return member;
     }
 
     return NULL;
@@ -97,19 +100,22 @@ Member *MemberList_getMatching(MemberList *this, StringView token, MemberMatcher
         .mm = mm,
         .tm = tm,
     };
-    return Map_foreach_matching(&this->members, token,
+    return Map_foreach_matching(&this->member_map, token,
         &MemberList_callback_getMatching_loop,
         &args
     );
 }
 
-Member *MemberList_add(MemberList *this, StringView token) {
-    return Map_add(&this->members, token);
+Member *MemberList_add(MemberList *this, StringView token, Allocator alc) {
+    Member *member = Vector_push(&this->members);
+    *(Member**)Map_add(&this->member_map, token) = member;
+    member->token = Buffer_copy(token, alc);
+    return member;
 }
 
 void *MemberList_member_repr(StringView token, void *item, void *payload) {
     OutStream os = *(OutStream*)payload;
-    Member *member = (Member*)item;
+    Member *member = *(Member**)item;
 
     OutStream_beginItem(os);
 
@@ -130,8 +136,11 @@ void *MemberList_member_repr(StringView token, void *item, void *payload) {
 }
 
 void MemberList_repr(MemberList *this, OutStream os) {
-    Map_foreach_stable_kv(&this->members, &MemberList_member_repr, &os);
+    Map_foreach_stable_kv(&this->member_map, &MemberList_member_repr, &os);
 }
 
 #undef PRINT_PAYLOAD
 
+Size MemberList_getRuntimeSize(MemberList *this) {
+    return 0;
+}

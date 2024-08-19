@@ -15,6 +15,6 @@ Member *ParserFrame_getMember(ParserFrame *this, StringView token, MemberMatcher
     return member;
 }
 
-Member *ParserFrame_addMember(ParserFrame *this, StringView token) {
-    return MemberList_add(this->frame, token);
+Member *ParserFrame_addMember(ParserFrame *this, StringView token, Allocator alc) {
+    return MemberList_add(this->frame, token, alc);
 }

@@ -28,6 +28,11 @@ ParserResult Parser_parseExpression(
             goto read_literal;
         }
 
+        if (ParserChar_isBlockBegin(c)) {
+            result = Parser_parseFrame(this, stream, frame, out_expression);
+            goto cleanup;
+        }
+
         if (ParserChar_isExpressionEndInclusive(c)) {
             break;
         }
@@ -40,6 +45,7 @@ ParserResult Parser_parseExpression(
         if (ParserChar_isWhitespace(c)) {
             continue;
         }
+
 
         result = ParserResult_construct_UNEXPECTED_CHAR(this, stream, c);
         goto cleanup;
@@ -112,9 +118,10 @@ ParserResult Parser_parseExpression(
             // first token references type and second token is undeclared -> member declaration 
             if (m1 == NULL && Type_isPrimitiveS(m0->type, TYPE_TYPE)) {
                 Type type = *(Type*)m0->object.target;
-                Member *member = ParserFrame_addMember(frame, t1);
+                Member *member = ParserFrame_addMember(frame, t1, this->allocator);
                 member->type = Type_copy(type, this->allocator);
                 member->object = Object_NULL;
+                member->qualifiers = MemberQualifiers_NULL;
                 unconsumed_index++;
                 goto end_consume_token;
             }

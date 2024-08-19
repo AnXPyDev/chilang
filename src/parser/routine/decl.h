@@ -1,1 +1,2 @@
+ParserResult Parser_parseFrame(Parser *this, ParserInStream *stream, ParserFrame *fream, Expression *out_expression);
 ParserResult Parser_parseExpression(Parser *this, ParserInStream *stream, ParserFrame *frame, Type desiredType, Expression *out_expression);

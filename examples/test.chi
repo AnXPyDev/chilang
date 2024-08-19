@@ -1,7 +1,7 @@
 u32 val;
-u32 val2;
+u32 val2 = 41;
 
-val = 41;
-val2 = val;
-
-print val2;
+{
+    u32 x = val2;
+    print x;
+}

@@ -1,4 +1,4 @@
-#define ELEMENT(index) (this->data + this->item_size * (index))
+#define ELEMENT(index) ((void*)(this->data + this->item_size * (index)))
 
 typedef struct {
     Allocator allocator;
@@ -114,8 +114,8 @@ const void *Vector_cget(const Vector *this, Size index) {
     return ELEMENT(index);
 }
 
-#define Vector_begin(this) ((this)->data)
-#define Vector_end(this) ((this)->data + (this)->item_size * (this)->size)
+#define Vector_begin(this) ((void*)((this)->data))
+#define Vector_end(this) ((void*)((this)->data + (this)->item_size * (this)->size))
 
 void Vector_join(Vector *this, ArrayView other) {
     if (this->capacity < this->size + other.size) {
@@ -167,5 +167,3 @@ ArrayView Vector_view(const Vector *this) {
 }
 
 #undef ELEMENT
-
-#define Vector_static(arr) ((Vector) { .allocator = staticAllocator, .item_size = sizeof(arr[0]), .size = 0, .capacity = ARRSIZE(arr), .data = (void*)&arr[0] })

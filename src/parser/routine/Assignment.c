@@ -18,7 +18,7 @@ ParserResult Parser_parseAssignmentExpression(
         return result;
     }
 
-    *out_expression = AssignmentExpression_create_move(token, expression, this->allocator);
+    *out_expression = AssignmentExpression_create_move(member, expression, this->allocator);
 
     return ParserResult_Success;
 }

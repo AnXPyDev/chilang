@@ -64,7 +64,7 @@ bool ParserChar_isExpressionBegin(ParserChar c) {
     return !ParserChar_isWhitespace(c);
 }
 
-bool ParserChar_isBlockStart(ParserChar c) {
+bool ParserChar_isBlockBegin(ParserChar c) {
     return c == '{';
 }
 

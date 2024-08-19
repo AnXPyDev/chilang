@@ -27,7 +27,9 @@ void FrameExpression_repr(void *vthis, OutStream os) {
 
 void FrameExpression_destroy(void *vthis, Allocator alc) {
     MemberList_destroy(&this->frame, alc);
-    Expression_destroy(this->expression, alc);
+    if (!Expression_isNull(this->expression)) {
+        Expression_destroy(this->expression, alc);
+    }
     Allocator_free(alc, this);
 }
 
