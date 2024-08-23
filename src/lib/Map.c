@@ -45,7 +45,7 @@ Map Map_new(Allocator allocator, Size item_size) {
 }
 
 struct Map_Entry *Map_createEntry(Map *this, Map_Hash hash, Map_Key key) {
-    struct Map_Entry *entry = Allocator_calloc(this->allocator, sizeof(struct Map_Entry) + key.size + this->item_size);
+    struct Map_Entry *entry = Allocator_malloc(this->allocator, sizeof(struct Map_Entry) + key.size + this->item_size);
     entry->key_size = key.size;
     entry->hash = hash;
     entry->index = this->counter;

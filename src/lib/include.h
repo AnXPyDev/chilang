@@ -6,6 +6,7 @@
 #include "Allocator.c"
 #include "allocators/Standard.c"
 #include "allocators/Static.c"
+#include "allocators/Arena.c"
 
 #include "BufferUtil.c"
 

@@ -1,6 +1,8 @@
 #include "decl.h"
-#include "Stack.c"
-#include "Operation.c"
+#include "Operation.h"
 #include "Procedure.c"
+
+#include "Operations.h"
+
 #include "Instance.c"
 #include "Execution.c"

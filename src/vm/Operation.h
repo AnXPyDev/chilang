@@ -1,0 +1,38 @@
+#define VM_OPERATION_SIZE 64
+
+typedef enum {
+    VM_OPERATION_NOP = 0,
+    
+    VM_OPERATION_RET,
+    VM_OPERATION_CALL,
+
+    VM_OPERATION_CPY,
+    VM_OPERATION_READ,
+    VM_OPERATION_WRITE,
+
+    VM_OPERATION_JMP,
+    VM_OPERATION_JMP_Z,
+    VM_OPERATION_JMP_L,
+    VM_OPERATION_JMP_G,
+    VM_OPERATION_JMP_ZL,
+    VM_OPERATION_JMP_ZG,
+
+    VM_OPERATION_SET,
+
+    VM_OPERATION_ADD,
+    VM_OPERATION_SUB,
+    VM_OPERATION_MUL,
+    VM_OPERATION_DIV,
+    VM_OPERATION_MOD,
+    
+    VM_OPERATION_CMP,
+
+    
+    VM_OPERATION_PRINT,
+    VM_OPERATION_PRINT_CHAR,
+} VmOperation_Code;
+
+typedef struct {
+    VmOperation_Code opcode;
+    char[VM_OPERATION_SIZE];
+} VmOperation;

@@ -3,8 +3,7 @@
 typedef Size VmAddress;
 
 typedef struct {
-    char *fptr;
-    char begin[VM_STACK_SIZE];
+    char data[VM_STACK_SIZE];
 } VmStack;
 
 static inline void *VmStack_getPtr(VmStack *this, VmAddress addr) {

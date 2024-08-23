@@ -1,0 +1,18 @@
+square:
+    VmInt result;
+    VmInt arg;
+    VmInt one;
+    VmInt n;
+
+    SET result 0;
+    SET one 1;
+    CPY arg n;
+
+    
+    SUB n 1
+        
+    JMP_Z n return
+    JMP
+
+
+return: RET OK

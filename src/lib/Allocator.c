@@ -19,27 +19,37 @@ const Allocator Allocator_NULL = {
 void *Allocator_malloc(Allocator this, Size size) {
     void *buf = this.interface->malloc(this.object, size);
     if (buf == NULL) {
-        fprintf(stderr, "\nAllocation of buffer failed (Allocator_malloc | %llu)\n", size);
+        fprintf(stderr, "\nABORT: Allocator %p failed (Allocator_malloc | %llu)\n", this.object, size);
+        fflush(stderr);
         abort();
     }
 
     return buf; 
 }
 
+/*
 void *Allocator_calloc(Allocator this, Size size) {
-    void *buf = this.interface->calloc(this.object, size);
-    if (buf == NULL) {
-        fprintf(stderr, "\nAllocation of buffer failed (Allocator_calloc | %llu)\n", size);
-        abort();
+    if (this.interface->calloc != NULL) {
+        void *buf = this.interface->calloc(this.object, size);
+        if (buf == NULL) {
+            fprintf(stderr, "\nABORT: Allocator %p failed (Allocator_calloc | %llu)\n", this.object, size);
+            fflush(stderr);
+            abort();
+        }
+        return buf;
     }
 
+    void *buf = Allocator_malloc(this, size);
+    memset(buf, 0, size);
     return buf;
 }
+*/
 
 void *Allocator_realloc(Allocator this, void *mem, Size size) {
     void *buf = this.interface->realloc(this.object, mem, size);
     if (buf == NULL) {
-        fprintf(stderr, "\nAllocation of buffer failed (Allocator_realloc | %llu)\n", size);
+        fprintf(stderr, "\nABORT: Allocator %p failed (Allocator_realloc | %llu)\n",this.object, size);
+        fflush(stderr);
         abort();
     }
 

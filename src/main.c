@@ -10,7 +10,10 @@ int main ( int argc, char **argv ) {
 
     OutStream_puts(logStream, "chi <3\n");
 
-    Allocator allocator = standardAllocator;
+    ArenaAllocator arenaAllocator;
+    ArenaAllocator_create(&arenaAllocator, standardAllocator, 1000000);
+
+    Allocator allocator = ArenaAllocator_upcast(&arenaAllocator);
 
     MemberList globalFrame;
     MemberList_create(&globalFrame, allocator);
