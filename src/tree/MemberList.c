@@ -144,3 +144,7 @@ void MemberList_repr(MemberList *this, OutStream os) {
 Size MemberList_getRuntimeSize(MemberList *this) {
     return 0;
 }
+
+bool MemberList_hasMember(MemberList *this, Member *member) {
+    return member >= (Member*)Vector_begin(&this->members) && member < (Member*)Vector_end(&this->members);
+}

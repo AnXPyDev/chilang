@@ -4,9 +4,6 @@
 #include "Buffer.c"
 
 #include "Allocator.c"
-#include "allocators/Standard.c"
-#include "allocators/Static.c"
-#include "allocators/Arena.c"
 
 #include "BufferUtil.c"
 
@@ -17,13 +14,23 @@
 
 #include "Vector.c"
 
-#include "streams/FileInStream.c"
-#include "streams/StringInStream.c"
+#include "Map.c"
+
+#include "allocators/Standard.c"
+#include "allocators/Static.c"
+#include "allocators/Arena.c"
 
 #include "streams/FileOutStream.c"
 #include "streams/StringOutStream.c"
 #include "streams/DelimOutStream.c"
 
+#include "streams/FileInStream.c"
+#include "streams/StringInStream.c"
+
+// runtime
 #include "std_streams.c"
 
-#include "Map.c"
+
+// debug utils
+#include "HPTimer.c"
+#include "allocators/Monitor.c"

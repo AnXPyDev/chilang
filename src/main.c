@@ -29,7 +29,14 @@ int main ( int argc, char **argv ) {
 
     Expression rootExpression = Expression_NULL;
 
+    HPTimer_Measurement timer_start = HPTimer_now();
+
     ParserResult result = Parser_parseUnit(&parser, is_stdin, strview("stdin"), &rootExpression);
+    
+    HPTimer_Duration timer = HPTimer_elapsed(timer_start);
+
+    fprintf(stderr, "Parsing took %lfms\n", HPTimer_millis(timer));
+
 
     if (ParserResult_isSuccess(result)) {
         OutStream_puts(logStream, "\nprogram: \n");

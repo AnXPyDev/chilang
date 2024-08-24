@@ -1,4 +1,6 @@
 typedef struct {
     Type type;
     char data[];
-} SimulatorValue;
+} SimValue;
+
+void SimValue_repr()

@@ -69,7 +69,7 @@ bool ParserInStream_end(ParserInStream *this) {
 
 void ParserInStream_describe(ParserInStream *this, OutStream os) {
     char buf[128];
-    snprintf(buf, 128, ": L%uC%u -%llu", this->line, this->character, this->buffer.size);
+    snprintf(buf, 128, ": L%uC%u -%zu", this->line, this->character, this->buffer.size);
     OutStream_writes(os, this->path);
     OutStream_puts(os, buf);
 }

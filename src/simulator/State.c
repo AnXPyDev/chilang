@@ -1,2 +1,3 @@
 typedef struct {
-} SimulatorState;
+    SimFrame *frame;
+} SimState;

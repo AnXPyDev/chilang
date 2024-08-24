@@ -14,10 +14,14 @@ typedef struct {
     void *object;
 } OutStream;
 
-typedef struct {
-    void (*print)(const void *this, OutStream stream);
-    const void *object;
-} Printable;
+const OutStream OutStream_NULL = {
+    .interface = NULL,
+    .object = NULL
+};
+
+bool OutStream_isNull(OutStream this) {
+   return this.interface == NULL; 
+}
 
 void OutStream_putc(OutStream this, int c) {
     this.interface->putc(this.object, c);
@@ -78,8 +82,3 @@ void OutStream_endItem(OutStream this) {
         this.interface->endItem(this.object);
     }
 }
-
-void OutStream_print(OutStream this, Printable printable) {
-    printable.print(printable.object, this);
-}
-
