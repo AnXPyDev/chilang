@@ -1,3 +1,9 @@
-typedef struct {
+TYPE_DECL(struct, SimState);
+
+struct SimState {
     SimFrame *frame;
-} SimState;
+};
+
+const SimState SimState_NULL = {
+    .frame = NULL
+};

@@ -83,8 +83,8 @@ bool Buffer_isNull(Buffer buf) {
 #define toBufferView(arr) ((BufferView) { .data = &arr[0], .size = sizeof(arr) })
 #define toArray(arr) ((Array) { .data = &arr[0], .size = ARRSIZE(arr) })
 #define toArrayView(arr) ((ArrayView) { .data = &arr[0], .size = ARRSIZE(arr) })
-#define asBuffer(val) ((Buffer) { .data = &(val), .size = sizeof(val) })
-#define asBufferView(val) ((BufferView) { .data = &(val), .size = sizeof(val) })
+#define asBuffer(val) ((Buffer) { .data = (void*)&(val), .size = sizeof(val) })
+#define asBufferView(val) ((BufferView) { .data = (void*)&(val), .size = sizeof(val) })
 
 #define LocalBuffer(sz) ((Buffer) { .data = (char[sz]) {0}, .size = (sz) })
 #define LocalArray(T, sz) ((Array) { .data = (T[sz]) {0}, .size = (sz) })

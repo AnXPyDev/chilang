@@ -40,6 +40,7 @@ Type PrintExpression_type(void *vthis, Allocator allocator) {
 #undef this
 
 const IExpression IPrintExpression = {
+    .id = EXPRESSION_PRINT,
     .repr = &PrintExpression_repr,
     .destroy = &PrintExpression_destroy,
     .copy = &PrintExpression_copy,

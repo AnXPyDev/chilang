@@ -1,16 +1,20 @@
-struct IExpression;
+TYPE_DECL(struct, IExpression);
+TYPE_DECL(struct, Expression);
 
-typedef struct {
+#include "expressions/identifiers.h"
+
+struct Expression {
     const struct IExpression *interface;
     void *object;
-} Expression;
+};
 
-typedef struct IExpression {
+struct IExpression {
+    EExpressionID id;
     Expression (*copy)(void *this, Allocator allocator);
     void (*destroy)(void *this, Allocator allocator);
     void (*repr)(void *this, OutStream stream);
     Type (*type)(void *this, Allocator allocator);
-} IExpression;
+};
 
 Expression Expression_copy(Expression this, Allocator allocator) {
     return this.interface->copy(this.object, allocator);

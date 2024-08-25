@@ -1,6 +1,8 @@
-typedef struct {
+TYPE_DECL(struct, SimValue);
+
+struct SimValue {
     Type type;
     char data[];
-} SimValue;
+};
 
-void SimValue_repr()
+void SimValue_repr();

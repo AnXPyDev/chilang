@@ -159,7 +159,7 @@ ParserResult Parser_parseExpression(
             goto error;
         }
 
-        *out_expression = GetExpression_create(m0->type, t0, this->allocator);
+        *out_expression = GetExpression_create(m0, this->allocator);
         goto cleanup;
     };
 

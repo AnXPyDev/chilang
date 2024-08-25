@@ -21,8 +21,20 @@ Expression FrameExpression_copy(void *vthis, Allocator alc) {
 }
 
 void FrameExpression_repr(void *vthis, OutStream os) {
+    OutStream_beginItem(os);
+    OutStream_puts(os, "FrameExpression: {");
+    OutStream_endItem(os);
+    OutStream_beginItem(os);
+    OutStream_puts(os, "members:");
+    OutStream_endItem(os);
     MemberList_repr(&this->frame, os);
+    OutStream_beginItem(os);
+    OutStream_puts(os, "expression:");
+    OutStream_endItem(os);
     Expression_repr(this->expression, os);
+    OutStream_beginItem(os);
+    OutStream_puts(os, "}");
+    OutStream_endItem(os);
 }
 
 void FrameExpression_destroy(void *vthis, Allocator alc) {
@@ -39,11 +51,13 @@ Type FrameExpression_type(void *vthis, Allocator alc) {
 
 #undef this
 
+
 const IExpression IFrameExpression = {
+    .id = EXPRESSION_FRAME,
     .repr = &FrameExpression_repr,
     .destroy = &FrameExpression_destroy,
     .copy = &FrameExpression_copy,
-    .type = &FrameExpression_type
+    .type = &FrameExpression_type,
 };
 
 Expression FrameExpression_upcast(FrameExpression *this) {
