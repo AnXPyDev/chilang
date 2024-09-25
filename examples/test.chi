@@ -1,5 +1,9 @@
 u32 val;
 u32 val2 = 41;
+bool isTrue = true;
+
+print isTrue;
+print false;
 
 {
     u32 x = val2;

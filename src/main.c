@@ -47,6 +47,9 @@ int main ( int argc, char **argv ) {
         exitCode = 1;
         goto cleanup;
     }
+
+    Expression_repr(rootExpression, logStream);
+    OutStream_puts(logStream, "\n");
     
     ParserResult_destroy(parserResult, &parser);
     Parser_destroy(&parser);
