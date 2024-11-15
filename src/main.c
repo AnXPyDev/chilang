@@ -10,8 +10,8 @@ int main ( int argc, char **argv ) {
     std_streams_init();
 
     OutStream logStream = os_stderr;
-
-    OutStream_puts(logStream, "chi <3\n");
+    
+	OutStream_puts(logStream, "chilang WIP\n");
 
     ArenaAllocator arenaAllocator;
     ArenaAllocator_create(&arenaAllocator, standardAllocator, 1000000);
