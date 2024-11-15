@@ -88,6 +88,13 @@ ParserResult Parser_parseExpression(
                     case KEYWORD_PRINT:
                         result = Parser_parsePrintExpression(this, stream, frame, out_expression);
                         goto cleanup;
+                    case KEYWORD_CALLABLE:
+                    case KEYWORD_TRUE:
+                        *out_expression = this->literal_true;
+                        goto cleanup;
+                    case KEYWORD_FALSE:
+                        *out_expression = this->literal_false;
+                        goto cleanup;
                     default:;
                         result = ParserResult_construct_TOKEN_UNEXPECTED(this, stream, t0);
                         goto error;

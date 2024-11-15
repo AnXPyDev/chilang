@@ -1,0 +1,3 @@
+typedef struct {
+    
+} Callable;
