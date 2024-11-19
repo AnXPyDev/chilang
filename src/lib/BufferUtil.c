@@ -30,3 +30,17 @@ Buffer Buffer_copy(BufferView this, Allocator allocator) {
     memcpy(result.data, this.data, this.size);
     return result;
 }
+
+Array Array_create(void *data, Size size) {
+    return (Array) {
+        .data = data,
+        .size = size
+    };
+}
+
+ArrayView ArrayView_create(const void *data, Size size) {
+    return (ArrayView) {
+        .data = data,
+        .size = size
+    };
+}

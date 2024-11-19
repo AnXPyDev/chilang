@@ -44,6 +44,7 @@ const char *PrimitiveType_REPRS[TYPE__END] = {
     [TYPE_ANY] = "<any>",
     [TYPE_TOKEN] = "<token>",
 
+    [TYPE_LABEL] = "<label>",
     [TYPE_VOID] = "void",
     [TYPE_BOOL] = "bool",
     [TYPE_U8] = "u8",
@@ -68,6 +69,7 @@ const TypeInfo PrimitiveType_INFOS[TYPE__END] = {
     [TYPE_ANY] = { .valid = true, .meta = true, .size_known = false, .size = 0 },
     [TYPE_TOKEN] = { .valid = true, .meta = true, .size_known = false, .size = 0 },
     
+    [TYPE_LABEL] = { .valid = true, .meta = false, .size_known = true, .size = sizeof(void*) },
     [TYPE_VOID] = { .valid = true, .meta = false, .size_known = true, .size = 0 },
     [TYPE_BOOL] = { .valid = true, .meta = false, .size_known = true, .size = sizeof(bool) },
     [TYPE_I8] = { .valid = true, .meta = false, .size_known = true, .size = sizeof(int8_t) },
@@ -96,6 +98,7 @@ PrimitiveType PrimitiveType_TYPES[TYPE__END] = {
     [TYPE_ANY] = { .type = TYPE_ANY },
     [TYPE_TOKEN] = { .type = TYPE_TOKEN },
     
+    [TYPE_LABEL] = { .type = TYPE_LABEL },
     [TYPE_VOID] = { .type = TYPE_VOID },
     [TYPE_BOOL] = { .type = TYPE_BOOL },
     [TYPE_I8] = { .type = TYPE_I8 },

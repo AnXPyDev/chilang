@@ -1,3 +1,10 @@
-fn i32(i32, i32) = (a,b) {
-
-}
+decl fn[u32, u32 => u32] add
+decl u32 x
+decl u32 y
+asgn x 15
+asgn y 15
+decl u32 z
+asgn z builtin_add_u32(x, y)
+print x
+print y
+print z

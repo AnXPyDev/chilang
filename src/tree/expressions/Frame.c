@@ -53,7 +53,6 @@ Type FrameExpression_type(void *vthis, Allocator alc) {
 
 
 const IExpression IFrameExpression = {
-    .id = EXPRESSION_FRAME,
     .repr = &FrameExpression_repr,
     .destroy = &FrameExpression_destroy,
     .copy = &FrameExpression_copy,

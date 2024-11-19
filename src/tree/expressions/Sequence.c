@@ -37,7 +37,6 @@ Expression SequenceExpression_copy(void *vthis, Allocator allocator) {
 #undef this
 
 const IExpression ISequenceExpression = {
-    .id = EXPRESSION_SEQUENCE,
     .destroy = &SequenceExpression_destroy,
     .copy = &SequenceExpression_copy,
     .repr = &SequenceExpression_repr

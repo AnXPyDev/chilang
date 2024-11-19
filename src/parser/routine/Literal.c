@@ -1,5 +1,3 @@
-#define PARSER_MAX_STRING_LENGTH
-
 int Parser_convertNumericLiteralLE(StringView literal, uint8_t *target, Size capacity, Size *out_bits) {
     capacity *= 8;
     uint8_t buf[PARSER_NUMERIC_LITERAL_MAX_LEN];

@@ -9,7 +9,6 @@ struct Expression {
 };
 
 struct IExpression {
-    EExpressionID id;
     Expression (*copy)(void *this, Allocator allocator);
     void (*destroy)(void *this, Allocator allocator);
     void (*repr)(void *this, OutStream stream);

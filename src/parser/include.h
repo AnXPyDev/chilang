@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include "objects/Keyword.c"
+
 #include "Util.c"
 
 #include "ParserChar.c"
@@ -11,11 +13,4 @@
 #include "ParserResult.c"
 #include "ParserResultUtil.c"
 
-#include "routine/decl.h"
-#include "routine/Read.c"
-#include "routine/Literal.c"
-#include "routine/Assignment.c"
-#include "routine/Print.c"
 #include "routine/Expression.c"
-#include "routine/Frame.c"
-#include "routine/Unit.c"

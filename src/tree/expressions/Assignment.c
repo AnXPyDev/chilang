@@ -40,7 +40,6 @@ Type AssignmentExpression_type(void *vthis, Allocator alc) {
 #undef this
 
 const IExpression IAssignmentExpression = {
-    .id = EXPRESSION_ASSIGNMENT,
     .copy = &AssignmentExpression_copy,
     .destroy = &AssignmentExpression_destroy,
     .repr = &AssignmentExpression_repr,

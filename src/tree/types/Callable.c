@@ -92,3 +92,7 @@ Type CallableType_upcast(CallableType *this) {
         .object = this
     };
 }
+
+bool Type_isCallable(Type this) {
+    return this.interface == &ICallableType;
+}

@@ -40,3 +40,5 @@ TypedObject TypeObject_create(Type type, Allocator allocator) {
         }
     };
 }
+
+TypedObject TypeObject_create()

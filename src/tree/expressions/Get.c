@@ -33,7 +33,6 @@ Type GetExpression_type(void *vthis, Allocator allocator) {
 #undef this
 
 const IExpression IGetExpression = {
-    .id = EXPRESSION_GET,
     .destroy = &GetExpression_destroy,
     .repr = &GetExpression_repr,
     .type = &GetExpression_type,
