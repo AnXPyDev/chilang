@@ -1,8 +1,6 @@
 TYPE_DECL(struct, IExpression);
 TYPE_DECL(struct, Expression);
 
-#include "expressions/identifiers.h"
-
 struct Expression {
     const struct IExpression *interface;
     void *object;

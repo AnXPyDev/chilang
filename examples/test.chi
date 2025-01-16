@@ -1,12 +1,9 @@
-u32 val;
-u32 val2 = 41;
-bool isTrue = true;
+(i32, i32 -> i32)+ = { a, b -> buil}
 
-print isTrue;
-print false;
 
-{
-    u32 x = val2;
-    x = 12312313;
-    print x;
-}
+type annotation:
+
+var num: i32 = 12;
+val setnum: (@i32, i32 -> void) = { p: @i32, n: i32 -> $p = n; void };
+
+val setnum: (T -> any) = { T: type -> { p: @T, n: T -> $p = n; void } };
